@@ -2,7 +2,8 @@ import datetime
 import json
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.templatetags.static import static
-from django.core.exceptions import BadRequest
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -98,5 +99,8 @@ def register_order(request):
    
     except KeyError as err:
         return Response('Mandatory parametr not  found', status=status.HTTP_400_BAD_REQUEST)
-    except TypeError as err:
-        return Response('Value error', status=status.HTTP_400_BAD_REQUEST)
+    
+    except (IntegrityError, ObjectDoesNotExist, TypeError, ValueError) as err:
+        return Response(f'Incorrect data. {err}', status=status.HTTP_400_BAD_REQUEST)
+    
+
