@@ -4,6 +4,10 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.templatetags.static import static
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
+from phonenumber_field.phonenumber import PhoneNumber
+from phonenumbers.phonenumberutil import NumberParseException
+
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -71,9 +75,16 @@ def register_order(request):
         if not products:
             raise KeyError
         firstname = web_order['firstname']
+        if not isinstance(firstname, str):
+            raise ValueError
         lastname = web_order['lastname']
-        phonenumber = web_order['phonenumber']        
+        if not isinstance(lastname, str):
+            raise ValueError
+        phonenumber = PhoneNumber.from_string(web_order['phonenumber'])
+        if not phonenumber.is_valid():
+            raise ValueError
 
+        #phonenumber = web_order['phonenumber']
         address, _ = Address.objects.get_or_create(address=web_order['address'])
         customer, _ = Customer.objects.get_or_create(
             firstname=firstname,
@@ -100,7 +111,6 @@ def register_order(request):
     except KeyError as err:
         return Response('Mandatory parametr not  found', status=status.HTTP_400_BAD_REQUEST)
     
-    except (IntegrityError, ObjectDoesNotExist, TypeError, ValueError) as err:
+    except (IntegrityError, ObjectDoesNotExist, TypeError, ValueError, NumberParseException) as err:
         return Response(f'Incorrect data. {err}', status=status.HTTP_400_BAD_REQUEST)
     
-
