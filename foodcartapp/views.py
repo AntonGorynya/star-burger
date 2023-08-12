@@ -1,9 +1,9 @@
+import datetime
 import json
 from django.http import JsonResponse
 from django.templatetags.static import static
 
-
-from .models import Product
+from .models import Product, Customer, Address, Cart, Order
 
 
 def banners_list_api(request):
@@ -59,6 +59,36 @@ def product_list_api(request):
 
 
 def register_order(request):
-    # TODO это лишь заглушка    
-    print(json.loads(request.body))    
-    return JsonResponse(json.loads(request.body))
+    web_order = json.loads(request.body) 
+    if web_order['products']:
+        products = web_order['products']
+        firstname = web_order['firstname']
+        lastname = web_order['lastname']
+        phonenumber = web_order['phonenumber']        
+
+        address, _ = Address.objects.get_or_create(address=web_order['address'])
+        customer, _ = Customer.objects.get_or_create(
+            firstname=firstname,
+            lastname=lastname,
+            phonenumber=phonenumber,
+            address=address
+        )
+        order, _ = Order.objects.get_or_create(
+            customer=customer,
+            address=address,
+            start_date=datetime.datetime.now().date(),
+            start_time=datetime.datetime.now().time(),
+            end_date=None,
+            end_time=None
+        )
+        for product in products:
+            Cart.objects.get_or_create(
+                product=Product.objects.get(id=product['product']),
+                quantity=product['quantity'],
+                order=order
+            )
+
+
+
+       
+    return JsonResponse(web_order)

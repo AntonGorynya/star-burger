@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Restaurant(models.Model):
@@ -121,3 +122,41 @@ class RestaurantMenuItem(models.Model):
 
     def __str__(self):
         return f"{self.restaurant.name} - {self.product.name}"
+
+
+class Address(models.Model):
+    address = models.CharField('Адрес', max_length=50)
+
+    def __str__(self):
+        return f'{self.address}'
+
+
+class Customer(models.Model):
+    firstname = models.CharField('Имя', max_length=50)
+    lastname = models.CharField('Фамилия', max_length=50)
+    phonenumber = PhoneNumberField('Номер телефона')
+    address = models.ForeignKey(Address, related_name='customer', on_delete=models.SET_DEFAULT, default='')
+
+    def __str__(self):
+        return f"{self.firstname}  {self.lastname}"
+
+
+class Order(models.Model):    
+    customer = models.ForeignKey(Customer, related_name='orders', on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, related_name='orders', on_delete=models.CASCADE)
+    start_date = models.DateField('Дата заказа', db_index=True)
+    start_time = models.TimeField('Время заказа', db_index=True)
+    end_date = models.DateField('Дата завершения заказа', null=True, db_index=True)
+    end_time = models.TimeField('Время завершения заказа', null=True, db_index=True)
+
+    def __str__(self):
+        return f'{self.address} {self.start_date} {self.start_time} {self.end_date} {self.end_time}'
+
+    
+class Cart(models.Model):
+    product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField('количество')
+    order = models.ForeignKey(Order, related_name='cart', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.order.id} {self.product} {self.quantity}'
