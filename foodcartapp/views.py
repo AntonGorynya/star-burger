@@ -2,6 +2,8 @@ import datetime
 import json
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .models import Product, Customer, Address, Cart, Order
 
@@ -58,8 +60,10 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 def register_order(request):
-    web_order = json.loads(request.body) 
+    web_order = request.data
+    print(web_order)
     if web_order['products']:
         products = web_order['products']
         firstname = web_order['firstname']
@@ -91,4 +95,4 @@ def register_order(request):
 
 
        
-    return JsonResponse(web_order)
+    return Response(web_order)
