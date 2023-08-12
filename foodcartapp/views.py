@@ -1,9 +1,11 @@
 import datetime
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.templatetags.static import static
+from django.core.exceptions import BadRequest
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 from .models import Product, Customer, Address, Cart, Order
 
@@ -61,11 +63,12 @@ def product_list_api(request):
 
 
 @api_view(['POST'])
-def register_order(request):
-    web_order = request.data
-    print(web_order)
-    if web_order['products']:
+def register_order(request):    
+    try:
+        web_order = request.data
         products = web_order['products']
+        if not products:
+            raise KeyError
         firstname = web_order['firstname']
         lastname = web_order['lastname']
         phonenumber = web_order['phonenumber']        
@@ -90,9 +93,10 @@ def register_order(request):
                 product=Product.objects.get(id=product['product']),
                 quantity=product['quantity'],
                 order=order
-            )
-
-
-
-       
-    return Response(web_order)
+            )       
+        return Response(web_order)        
+   
+    except KeyError as err:
+        return Response('Mandatory parametr not  found', status=status.HTTP_400_BAD_REQUEST)
+    except TypeError as err:
+        return Response('Value error', status=status.HTTP_400_BAD_REQUEST)
