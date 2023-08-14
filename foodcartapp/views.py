@@ -116,9 +116,6 @@ def register_order(request):
         end_time=None
     )
     for product in products:
-        print(product)
-
-
         Cart.objects.get_or_create(
             product=product['product'],
             quantity=product['quantity'],
@@ -132,5 +129,3 @@ def register_order(request):
         'address': address.address
     }
     return Response(context)
-
-
