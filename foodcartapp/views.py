@@ -20,20 +20,23 @@ class CartSerializer(ModelSerializer):
             fields = ['product', 'quantity']
 
 
+
 class OrderSerializer(ModelSerializer):
+    address = CharField()
+    products = ListField()
 
     def validate_products(self, value):
         if not value:
             raise ValidationError('Empty product list')
-
-    products = CartSerializer(many=True, validators=[])
-    address = CharField()
+        serializer = CartSerializer(many=True, data=value)
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data
 
     class Meta:
         model = Customer
-        fields = ['firstname', 'lastname', 'phonenumber', 'address', 'products']    
+        fields = ['firstname', 'lastname', 'phonenumber', 'address', 'products']
 
-    
+
 def banners_list_api(request):
     # FIXME move data to db?
     return JsonResponse([
@@ -85,18 +88,18 @@ def product_list_api(request):
         'indent': 4,
     })
 
- 
+
 @api_view(['POST'])
-def register_order(request): 
+def register_order(request):
     web_order = request.data
     serializer = OrderSerializer(data=web_order)
-    serializer.is_valid(raise_exception=True)  
-    
-    products = web_order['products']        
-    firstname = web_order['firstname']        
-    lastname = web_order['lastname']        
-    phonenumber = PhoneNumber.from_string(web_order['phonenumber'])
-   
+    serializer.is_valid(raise_exception=True)
+
+    products = serializer.validated_data['products']
+    firstname = serializer.validated_data['firstname']
+    lastname = serializer.validated_data['lastname']
+    phonenumber = PhoneNumber.from_string(serializer.validated_data['phonenumber'] )
+
     address, _ = Address.objects.get_or_create(address=web_order['address'])
     customer, _ = Customer.objects.get_or_create(
         firstname=firstname,
@@ -113,11 +116,21 @@ def register_order(request):
         end_time=None
     )
     for product in products:
+        print(product)
+
+
         Cart.objects.get_or_create(
-            product=Product.objects.get(id=product['product']),
+            product=product['product'],
             quantity=product['quantity'],
             order=order
-        )       
-    return Response(web_order)        
-   
-    
+        )
+    context = {
+        'id': order.id,
+        'firstname': customer.firstname,
+        'lastname': customer.lastname,
+        'phonenumber': str(customer.phonenumber),
+        'address': address.address
+    }
+    return Response(context)
+
+
