@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 def set_price(apps, schema_editors):
     Cart = apps.get_model('foodcartapp', 'Cart')
-    for cart in Cart.objects.all():
+    for cart in Cart.objects.all().iterator():
         cart.fixed_price = cart.quantity * cart.product.price
         cart.save()
 
