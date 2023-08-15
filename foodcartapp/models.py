@@ -1,6 +1,13 @@
 from django.db import models
+from django.db.models import Sum, F
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
+
+
+class CartQuerySet(models.QuerySet):
+    def get_price(self,  *args, **kwargs):
+        #print(sum([item.quantity*item.product.price for item in self]))
+        return self.aggregate(total=Sum(F('quantity')*F('product__price')))['total']
 
 
 class Restaurant(models.Model):
@@ -141,7 +148,7 @@ class Customer(models.Model):
         return f"{self.firstname}  {self.lastname}"
 
 
-class Order(models.Model):    
+class Order(models.Model):
     customer = models.ForeignKey(Customer, related_name='orders', on_delete=models.CASCADE)
     address = models.ForeignKey(Address, related_name='orders', on_delete=models.CASCADE)
     start_date = models.DateField('Дата заказа', db_index=True)
@@ -150,13 +157,15 @@ class Order(models.Model):
     end_time = models.TimeField('Время завершения заказа', null=True, db_index=True)
 
     def __str__(self):
-        return f'{self.address} {self.start_date} {self.start_time} {self.end_date} {self.end_time}'
+        return f'{self.id} {self.address} {self.start_date} {self.start_time} {self.end_date} {self.end_time}'
 
-    
+
 class Cart(models.Model):
     product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField('количество')
     order = models.ForeignKey(Order, related_name='cart', on_delete=models.CASCADE)
+
+    objects = CartQuerySet.as_manager()
 
     def __str__(self):
         return f'{self.order.id} {self.product} {self.quantity}'

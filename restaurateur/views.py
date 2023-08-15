@@ -3,12 +3,13 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
+from django.db.models import Count
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
 
-from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.models import Product, Restaurant, Order, Cart
 
 
 class Login(forms.Form):
@@ -92,9 +93,20 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    #orders = Order.objects.filter(end_date=None)
-    orders = Order.objects.prefetch_related('customer').prefetch_related('address').filter(end_date=None)
-    print(orders)
-    return render(request, template_name='order_items.html', context={'orders': orders
+    orders = Order.objects.filter(end_date=None).select_related('customer').select_related('address')
+    context = {'orders': []}
+    for order in orders:
+        order_id = order.id
+        customer_name = f'{order.customer.firstname} {order.customer.lastname}'
+        phonenumber = order.customer.phonenumber
+        address = order.address
+        cart = order.cart.select_related('product')
+        context['orders'].append({
+            'id': order_id,
+            'customer_name': customer_name,
+            'phonenumber': phonenumber,
+            'address': address,
+            'sum': cart.get_price()
+        })
 
-    })
+    return render(request, template_name='order_items.html', context=context)
