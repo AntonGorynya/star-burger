@@ -164,6 +164,7 @@ class Cart(models.Model):
     product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField('количество')
     order = models.ForeignKey(Order, related_name='cart', on_delete=models.CASCADE)
+    fixed_price = models.DecimalField('цена', max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])
 
     objects = CartQuerySet.as_manager()
 
