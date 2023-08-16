@@ -159,9 +159,9 @@ class Order(models.Model):
     status = models.CharField(
         max_length=2,
         choices=[
-            ('MR', 'manager'),
-            ('RN', 'restoran'),
-            ('DY', 'delivery')
+            ('MR', 'Необработан'),
+            ('RN', 'готовится'),
+            ('DY', 'в доставке')
         ],
         default='MR',
         verbose_name='Статус'
@@ -178,7 +178,7 @@ class Order(models.Model):
     )
 
     def __str__(self):
-        return f'{self.id} {self.address} {self.start_date} {self.end_date} {self.end_time}'
+        return f'{self.id} {self.address} {self.start_date} {self.end_date}'
 
 
 class Cart(models.Model):
