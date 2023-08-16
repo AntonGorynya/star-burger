@@ -161,10 +161,10 @@ class Order(models.Model):
 
 
 class Cart(models.Model):
-    product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.PositiveIntegerField('количество')
     order = models.ForeignKey(Order, related_name='cart', on_delete=models.CASCADE)
-    fixed_price = models.DecimalField('цена', max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])
+    fixed_price = models.DecimalField('цена за штуку', max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])
 
     objects = CartQuerySet.as_manager()
 
