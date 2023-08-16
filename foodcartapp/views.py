@@ -4,7 +4,7 @@ import json
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.templatetags.static import static
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from phonenumber_field.phonenumber import PhoneNumber
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -90,6 +90,7 @@ def product_list_api(request):
 
 
 @api_view(['POST'])
+@transaction.atomic
 def register_order(request):
     web_order = request.data
     serializer = OrderSerializer(data=web_order)
@@ -119,7 +120,8 @@ def register_order(request):
         Cart.objects.get_or_create(
             product=product['product'],
             quantity=product['quantity'],
-            order=order
+            order=order,
+            fixed_price=product['quantity']*product['product'].price
         )
     context = {
         'id': order.id,
