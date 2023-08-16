@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.shortcuts import reverse
 from django.templatetags.static import static
+from django.http import HttpResponseRedirect
 from django.utils.html import format_html
 from django import forms
 
@@ -130,3 +131,6 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [
         CartInline,
     ]
+    def response_change(self, request, obj):
+        print(request)
+        return HttpResponseRedirect(reverse('restaurateur:view_orders'))
