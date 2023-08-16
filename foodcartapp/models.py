@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Sum, F
 from django.core.validators import MinValueValidator
-from django.utils import timezone
+from django.utils.timezone import now, localtime, localdate
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -152,8 +152,7 @@ class Customer(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(Customer, related_name='orders', on_delete=models.CASCADE, verbose_name='Клиент')
     address = models.ForeignKey(Address, related_name='orders', on_delete=models.CASCADE, verbose_name='Адрес')
-    start_date = models.DateField('Дата заказа', db_index=True, default=timezone.now)
-    start_time = models.TimeField('Время заказа', db_index=True, default=timezone.now)
+    start_date = models.DateTimeField('Дата заказа', db_index=True, default=now)
     end_date = models.DateField('Дата завершения заказа', null=True, blank=True, db_index=True)
     end_time = models.TimeField('Время завершения заказа', null=True, blank=True, db_index=True)
     comments = models.TextField(null=True, blank=True, verbose_name='Комментарий к заказу', max_length=500, default='')
@@ -169,7 +168,7 @@ class Order(models.Model):
     )
 
     def __str__(self):
-        return f'{self.id} {self.address} {self.start_date} {self.start_time} {self.end_date} {self.end_time}'
+        return f'{self.id} {self.address} {self.start_date} {self.end_date} {self.end_time}'
 
 
 class Cart(models.Model):

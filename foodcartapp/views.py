@@ -111,8 +111,7 @@ def register_order(request):
     order, _ = Order.objects.get_or_create(
         customer=customer,
         address=address,
-        start_date=datetime.datetime.now().date(),
-        start_time=datetime.datetime.now().time(),
+        start_date=datetime.datetime.now(),
         end_date=None,
         end_time=None
     )

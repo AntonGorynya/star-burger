@@ -128,6 +128,7 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    readonly_fields = ['start_date']
     inlines = [
         CartInline,
     ]
