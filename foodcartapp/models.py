@@ -153,8 +153,8 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, related_name='orders', on_delete=models.CASCADE, verbose_name='Клиент')
     address = models.ForeignKey(Address, related_name='orders', on_delete=models.CASCADE, verbose_name='Адрес')
     start_date = models.DateTimeField('Дата заказа', db_index=True, default=now)
-    end_date = models.DateField('Дата завершения заказа', null=True, blank=True, db_index=True)
-    end_time = models.TimeField('Время завершения заказа', null=True, blank=True, db_index=True)
+    called_at = models.DateTimeField('Дата время звонка', db_index=True, blank=True, null=True)
+    end_date = models.DateTimeField('Дата завершения заказа', null=True, blank=True, db_index=True)
     comments = models.TextField(null=True, blank=True, verbose_name='Комментарий к заказу', max_length=500, default='')
     status = models.CharField(
         max_length=2,
