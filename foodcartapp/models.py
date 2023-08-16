@@ -149,12 +149,22 @@ class Customer(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, related_name='orders', on_delete=models.CASCADE)
-    address = models.ForeignKey(Address, related_name='orders', on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, related_name='orders', on_delete=models.CASCADE, verbose_name='Клиент')
+    address = models.ForeignKey(Address, related_name='orders', on_delete=models.CASCADE, verbose_name='Адрес')
     start_date = models.DateField('Дата заказа', db_index=True)
     start_time = models.TimeField('Время заказа', db_index=True)
     end_date = models.DateField('Дата завершения заказа', null=True, blank=True, db_index=True)
     end_time = models.TimeField('Время завершения заказа', null=True, blank=True, db_index=True)
+    status = models.CharField(
+        max_length=2,
+        choices=[
+            ('MR', 'manager'),
+            ('RN', 'restoran'),
+            ('DY', 'delivery')
+        ],
+        default='MR',
+        verbose_name='Статус'
+    )
 
     def __str__(self):
         return f'{self.id} {self.address} {self.start_date} {self.start_time} {self.end_date} {self.end_time}'
