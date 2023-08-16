@@ -133,7 +133,7 @@ class OrderAdmin(admin.ModelAdmin):
     ]
     def response_change(self, request, obj):
         response = super().response_change(request, obj)
-        if "next" in request.GET:
-            return HttpResponseRedirect(reverse('restaurateur:view_orders'))
+        if 'next' in request.GET:
+            return HttpResponseRedirect(request.GET['next'])
         else:
             return response
