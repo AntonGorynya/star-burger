@@ -132,5 +132,8 @@ class OrderAdmin(admin.ModelAdmin):
         CartInline,
     ]
     def response_change(self, request, obj):
-        print(request)
-        return HttpResponseRedirect(reverse('restaurateur:view_orders'))
+        response = super().response_change(request, obj)
+        if "next" in request.GET:
+            return HttpResponseRedirect(reverse('restaurateur:view_orders'))
+        else:
+            return response
