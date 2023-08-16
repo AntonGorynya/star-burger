@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.shortcuts import reverse
 from django.templatetags.static import static
 from django.utils.html import format_html
+from django import forms
 
 from .models import Product
 from .models import ProductCategory
@@ -13,8 +14,10 @@ class RestaurantMenuItemInline(admin.TabularInline):
     model = RestaurantMenuItem
     extra = 0
 
+
 class CartInline(admin.TabularInline):
     model = Cart
+    readonly_fields = ['position_sum']
     extra = 0
 
 

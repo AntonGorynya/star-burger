@@ -153,8 +153,8 @@ class Order(models.Model):
     address = models.ForeignKey(Address, related_name='orders', on_delete=models.CASCADE)
     start_date = models.DateField('Дата заказа', db_index=True)
     start_time = models.TimeField('Время заказа', db_index=True)
-    end_date = models.DateField('Дата завершения заказа', null=True, db_index=True)
-    end_time = models.TimeField('Время завершения заказа', null=True, db_index=True)
+    end_date = models.DateField('Дата завершения заказа', null=True, blank=True, db_index=True)
+    end_time = models.TimeField('Время завершения заказа', null=True, blank=True, db_index=True)
 
     def __str__(self):
         return f'{self.id} {self.address} {self.start_date} {self.start_time} {self.end_date} {self.end_time}'
@@ -164,7 +164,16 @@ class Cart(models.Model):
     product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.PositiveIntegerField('количество')
     order = models.ForeignKey(Order, related_name='cart', on_delete=models.CASCADE)
-    fixed_price = models.DecimalField('цена за штуку', max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])
+    fixed_price = models.DecimalField(
+        'цена за штуку',
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
+
+    def position_sum(self):
+        if self.fixed_price:
+            return self.quantity * self.fixed_price
 
     objects = CartQuerySet.as_manager()
 
