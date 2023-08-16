@@ -106,7 +106,8 @@ def view_orders(request):
             'customer_name': customer_name,
             'phonenumber': phonenumber,
             'address': address,
-            'sum': cart.get_price()
+            'sum': cart.get_price(),
+            'comments': order.comments
         })
 
     return render(request, template_name='order_items.html', context=context)

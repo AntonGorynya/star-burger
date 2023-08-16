@@ -155,6 +155,7 @@ class Order(models.Model):
     start_time = models.TimeField('Время заказа', db_index=True)
     end_date = models.DateField('Дата завершения заказа', null=True, blank=True, db_index=True)
     end_time = models.TimeField('Время завершения заказа', null=True, blank=True, db_index=True)
+    comments = models.TextField(null=True, blank=True, verbose_name='Комментарий к заказу', max_length=500, default='')
     status = models.CharField(
         max_length=2,
         choices=[
