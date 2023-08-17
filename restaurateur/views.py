@@ -104,10 +104,13 @@ def view_orders(request):
         phonenumber = order.customer.phonenumber
         cart = order.cart.select_related('product')
         products = cart.values('product').distinct()
-        restaurants = Restaurant.objects.all()
-        for product in products:
-            menus = RestaurantMenuItem.objects.filter(product=product['product'])
-            restaurants = restaurants.filter(menu_items__in=menus)
+        restaurants = []
+        if not order.restaurant:
+            restaurants = Restaurant.objects.all()
+            for product in products:
+                menus = RestaurantMenuItem.objects.filter(product=product['product'])
+                restaurants = restaurants.filter(menu_items__in=menus)
+
         context['orders'].append({
             'id': order.id,
             'customer_name': customer_name,
@@ -115,7 +118,8 @@ def view_orders(request):
             'address': order.address,
             'sum': cart.get_price(),
             'comments': order.comments,
-            'restaurants': restaurants
+            'restaurants': restaurants,
+            'chosed_restaurant': order.restaurant,
         })
 
     return render(request, template_name='order_items.html', context=context)

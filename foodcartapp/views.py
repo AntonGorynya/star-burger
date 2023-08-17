@@ -113,7 +113,6 @@ def register_order(request):
         address=address,
         start_date=datetime.datetime.now(),
         end_date=None,
-        end_time=None
     )
     for product in products:
         Cart.objects.get_or_create(
