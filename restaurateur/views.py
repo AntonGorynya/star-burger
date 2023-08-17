@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
 
-from foodcartapp.models import Product, Restaurant, Order, Cart
+from foodcartapp.models import Product, Restaurant, Order, Cart, RestaurantMenuItem
 
 
 class Login(forms.Form):
@@ -91,23 +91,31 @@ def view_restaurants(request):
     })
 
 
+def select_restaurants_intersection(restarnats_set, another_restarnats_set):
+    pass
+
+
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     orders = Order.objects.filter(end_date=None).select_related('customer').select_related('address')
     context = {'orders': []}
     for order in orders:
-        order_id = order.id
         customer_name = f'{order.customer.firstname} {order.customer.lastname}'
         phonenumber = order.customer.phonenumber
-        address = order.address
         cart = order.cart.select_related('product')
+        products = cart.values('product').distinct()
+        restaurants = Restaurant.objects.all()
+        for product in products:
+            menus = RestaurantMenuItem.objects.filter(product=product['product'])
+            restaurants = restaurants.filter(menu_items__in=menus)
         context['orders'].append({
-            'id': order_id,
+            'id': order.id,
             'customer_name': customer_name,
             'phonenumber': phonenumber,
-            'address': address,
+            'address': order.address,
             'sum': cart.get_price(),
-            'comments': order.comments
+            'comments': order.comments,
+            'restaurants': restaurants
         })
 
     return render(request, template_name='order_items.html', context=context)
