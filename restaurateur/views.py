@@ -4,6 +4,7 @@ from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Count
+from geopy.distance import distance
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
@@ -102,12 +103,20 @@ def view_orders(request):
     for order in orders:
         cart = order.cart.select_related('product')
         products = cart.values('product').distinct()
+        customer_place = (order.address.lat, order.address.lon)
+
         restaurants = []
         if not order.restaurant:
             restaurants = Restaurant.objects.all()
             for product in products:
                 menus = RestaurantMenuItem.objects.filter(product=product['product'])
                 restaurants = restaurants.filter(menu_items__in=menus)
+                restaurants = [
+                    {
+                        'name': restaurant,
+                        'distance': round(distance(customer_place, (restaurant.address.lat, restaurant.address.lon)).km)
+                    } for restaurant in restaurants
+                ]
 
         context['orders'].append({
             'id': order.id,

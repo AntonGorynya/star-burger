@@ -40,7 +40,7 @@
             <ul>
               {% if order.restaurants %}
                 {% for restaurant in order.restaurants %}
-                   <li>{{ restaurant }}</li>
+                   <li>{{ restaurant.name }}: {{ restaurant.distance }} км</li>
                 {% endfor %}
               {% else %}
                 Подходящие рестораны не найдены
