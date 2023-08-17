@@ -156,6 +156,13 @@ class Order(models.Model):
     called_at = models.DateTimeField('Дата время звонка', db_index=True, blank=True, null=True)
     end_date = models.DateTimeField('Дата завершения заказа', null=True, blank=True, db_index=True)
     comments = models.TextField(null=True, blank=True, verbose_name='Комментарий к заказу', max_length=500, default='')
+    restaurant = models.ForeignKey(
+        Restaurant,
+        related_name='orders',
+        on_delete=models.CASCADE,
+        verbose_name='Ресторан',
+        null=True
+    )
     status = models.CharField(
         max_length=2,
         choices=[
