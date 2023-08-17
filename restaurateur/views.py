@@ -97,13 +97,14 @@ def select_restaurants_intersection(restarnats_set, another_restarnats_set):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.filter(end_date=None).select_related('customer').select_related('address')
+    orders = Order.objects.filter(end_date=None).select_related('customer').select_related('address').order_by('restaurant')
     context = {'orders': []}
     for order in orders:
         customer_name = f'{order.customer.firstname} {order.customer.lastname}'
         phonenumber = order.customer.phonenumber
         cart = order.cart.select_related('product')
         products = cart.values('product').distinct()
+        status = order.get_status_display()
         restaurants = []
         if not order.restaurant:
             restaurants = Restaurant.objects.all()
@@ -120,6 +121,7 @@ def view_orders(request):
             'comments': order.comments,
             'restaurants': restaurants,
             'chosed_restaurant': order.restaurant,
+            'status': status,
         })
 
     return render(request, template_name='order_items.html', context=context)

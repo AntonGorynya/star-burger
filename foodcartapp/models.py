@@ -160,7 +160,7 @@ class Order(models.Model):
         Restaurant,
         related_name='orders',
         on_delete=models.CASCADE,
-        verbose_name='Ресторан',
+        verbose_name='Ответственный Ресторан',
         null=True
     )
     status = models.CharField(
