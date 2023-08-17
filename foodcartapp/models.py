@@ -8,7 +8,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 class CartQuerySet(models.QuerySet):
     def get_price(self,  *args, **kwargs):
         #print(sum([item.quantity*item.product.price for item in self]))
-        return self.aggregate(total=Sum(F('quantity')*F('product__price')))['total']
+        return self.aggregate(total=Sum(F('quantity')*F('fixed_price')))['total']
 
 
 class Address(models.Model):
