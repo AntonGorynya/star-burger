@@ -11,6 +11,15 @@ class CartQuerySet(models.QuerySet):
         return self.aggregate(total=Sum(F('quantity')*F('product__price')))['total']
 
 
+class Address(models.Model):
+    address = models.CharField('Адрес', max_length=50)
+    lat = models.FloatField('Широта', null=True)
+    lon = models.FloatField('Долгота', null=True)
+
+    def __str__(self):
+        return f'{self.address}'
+
+
 class Restaurant(models.Model):
     name = models.CharField(
         'название',
@@ -130,13 +139,6 @@ class RestaurantMenuItem(models.Model):
 
     def __str__(self):
         return f"{self.restaurant.name} - {self.product.name}"
-
-
-class Address(models.Model):
-    address = models.CharField('Адрес', max_length=50)
-
-    def __str__(self):
-        return f'{self.address}'
 
 
 class Customer(models.Model):
