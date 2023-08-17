@@ -100,11 +100,8 @@ def view_orders(request):
     orders = Order.objects.filter(end_date=None).select_related('customer').select_related('address').order_by('restaurant')
     context = {'orders': []}
     for order in orders:
-        customer_name = f'{order.customer.firstname} {order.customer.lastname}'
-        phonenumber = order.customer.phonenumber
         cart = order.cart.select_related('product')
         products = cart.values('product').distinct()
-        status = order.get_status_display()
         restaurants = []
         if not order.restaurant:
             restaurants = Restaurant.objects.all()
@@ -114,14 +111,14 @@ def view_orders(request):
 
         context['orders'].append({
             'id': order.id,
-            'customer_name': customer_name,
-            'phonenumber': phonenumber,
+            'customer_name': f'{order.customer.firstname} {order.customer.lastname}',
+            'phonenumber': order.customer.phonenumber,
             'address': order.address,
             'sum': cart.get_price(),
             'comments': order.comments,
             'restaurants': restaurants,
             'chosed_restaurant': order.restaurant,
-            'status': status,
+            'status': order.get_status_display(),
         })
 
     return render(request, template_name='order_items.html', context=context)
