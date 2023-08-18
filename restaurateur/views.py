@@ -111,12 +111,12 @@ def view_orders(request):
             for product in products:
                 menus = RestaurantMenuItem.objects.filter(product=product['product'])
                 restaurants = restaurants.filter(menu_items__in=menus)
-                restaurants = [
-                    {
-                        'name': restaurant,
-                        'distance': round(distance(customer_place, (restaurant.address.lat, restaurant.address.lon)).km)
-                    } for restaurant in restaurants
-                ]
+            restaurants = [
+                {
+                    'name': restaurant,
+                    'distance': round(distance(customer_place, (restaurant.address.lat, restaurant.address.lon)).km)
+                } for restaurant in restaurants
+            ]
 
         context['orders'].append({
             'id': order.id,
