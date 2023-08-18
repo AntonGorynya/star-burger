@@ -92,8 +92,10 @@ def view_restaurants(request):
     })
 
 
-def select_restaurants_intersection(restarnats_set, another_restarnats_set):
-    pass
+def distance_calculate(customer_place, restaurant_address):
+    if None not in customer_place:
+        return round(distance(customer_place, (restaurant_address.lat, restaurant_address.lon)).km)
+    return None
 
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
@@ -114,7 +116,7 @@ def view_orders(request):
             restaurants = [
                 {
                     'name': restaurant,
-                    'distance': round(distance(customer_place, (restaurant.address.lat, restaurant.address.lon)).km)
+                    'distance': distance_calculate(customer_place, restaurant.address)
                 } for restaurant in restaurants
             ]
 
