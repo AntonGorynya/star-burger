@@ -3,7 +3,6 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
-from django.db.models import Count
 from geopy.distance import distance
 
 from django.contrib.auth import authenticate, login

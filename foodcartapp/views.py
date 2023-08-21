@@ -1,16 +1,13 @@
 import datetime
 import requests
-import json
 
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.templatetags.static import static
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from phonenumber_field.phonenumber import PhoneNumber
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError, Serializer, ModelSerializer, CharField, ListField
-from rest_framework import status
 from environs import Env
 
 from .models import Product, Customer, Address, Cart, Order
