@@ -100,7 +100,7 @@ def distance_calculate(customer_place, restaurant_address):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.filter(end_date=None).select_related('customer').select_related('address').order_by('restaurant')
+    orders = Order.objects.get_actual_orders()
     context = {'orders': []}
     for order in orders:
         cart = order.cart.select_related('product')

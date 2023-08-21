@@ -11,6 +11,11 @@ class CartQuerySet(models.QuerySet):
         return self.aggregate(total=Sum(F('quantity')*F('fixed_price')))['total']
 
 
+class OrderQuerySet(models.QuerySet):
+    def get_actual_orders(self, *args, **kwargs):
+        return self.filter(end_date=None).select_related('customer').select_related('address').order_by('restaurant')
+
+
 class Address(models.Model):
     address = models.CharField('Адрес', max_length=50)
     lat = models.FloatField('Широта', null=True)
@@ -188,6 +193,7 @@ class Order(models.Model):
         verbose_name='Способ оплаты',
         db_index=True
     )
+    objects = OrderQuerySet.as_manager()
 
     def __str__(self):
         return f'{self.id} {self.address} {self.start_date} {self.end_date}'
