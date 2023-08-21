@@ -7,7 +7,7 @@ from django.db import transaction
 from phonenumber_field.phonenumber import PhoneNumber
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.serializers import ValidationError, Serializer, ModelSerializer, CharField, ListField
+from rest_framework.serializers import ValidationError, Serializer, ModelSerializer, CharField, ListField, RelatedField, PrimaryKeyRelatedField, SerializerMethodField
 from environs import Env
 
 from .models import Product, Customer, Address, Cart, Order
@@ -15,6 +15,23 @@ from .models import Product, Customer, Address, Cart, Order
 env = Env()
 env.read_env()
 yandex_key = env('YANDEX_KEY')
+
+
+class AddressSerializer(ModelSerializer):
+    class Meta:        
+        model = Address
+        fields = ['address']
+
+
+    def create(self, validated_data):        
+        address = validated_data['address'] 
+        coordinates = fetch_coordinates(yandex_key, address)
+        address, _ = Address.objects.get_or_create(
+            address=address,
+            lat=coordinates['lat'],
+            lon=coordinates['lon'],
+        )
+        return address
 
 
 class CartSerializer(ModelSerializer):
@@ -25,7 +42,7 @@ class CartSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    address = CharField()
+    address = CharField()              
     products = ListField()
 
     def validate_products(self, value):
@@ -34,6 +51,12 @@ class OrderSerializer(ModelSerializer):
         serializer = CartSerializer(many=True, data=value)
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
+
+    def validate_address(self, value):        
+        serializer = AddressSerializer(many=False, data={'address': value})
+        serializer.is_valid(raise_exception=True)
+        address = serializer.create(serializer.validated_data)
+        return address
 
     class Meta:
         model = Customer
@@ -117,21 +140,27 @@ def product_list_api(request):
 @transaction.atomic
 def register_order(request):
     web_order = request.data
+    print('wev_data\n', web_order)
     serializer = OrderSerializer(data=web_order)
-    serializer.is_valid(raise_exception=True)
+    serializer.is_valid()
+    print('errors:\n',serializer.errors)
+
+    print('seroalized\n',serializer.validated_data)
 
     products = serializer.validated_data['products']
     firstname = serializer.validated_data['firstname']
     lastname = serializer.validated_data['lastname']
     address = serializer.validated_data['address']
     phonenumber = PhoneNumber.from_string(serializer.validated_data['phonenumber'] )
-    coordinates = fetch_coordinates(yandex_key, address)
 
-    address, _ = Address.objects.get_or_create(
-        address=address,
-        lat=coordinates['lat'],
-        lon=coordinates['lon'],
-    )
+    print(address)
+    #coordinates = fetch_coordinates(yandex_key, address)
+
+    # address, _ = Address.objects.get_or_create(
+    #     address=address,
+    #     lat=coordinates['lat'],
+    #     lon=coordinates['lon'],
+    # )
     customer, _ = Customer.objects.get_or_create(
         firstname=firstname,
         lastname=lastname,
@@ -158,4 +187,5 @@ def register_order(request):
         'phonenumber': str(customer.phonenumber),
         'address': address.address
     }
+    print(f'context:\n{context}')
     return Response(context)
