@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Sum, F
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.timezone import now, localtime, localdate
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -201,7 +201,7 @@ class Order(models.Model):
 
 class Cart(models.Model):
     product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE, verbose_name='Товар')
-    quantity = models.PositiveIntegerField('количество')
+    quantity = models.PositiveIntegerField('количество', validators=[MaxValueValidator(100)])
     order = models.ForeignKey(Order, related_name='cart', on_delete=models.CASCADE)
     fixed_price = models.DecimalField(
         'цена за штуку',
