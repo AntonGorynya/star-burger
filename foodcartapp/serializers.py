@@ -103,5 +103,9 @@ def fetch_coordinates(apikey, address):
         most_relevant = found_places[0]
         lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
         return {'lon': lon, 'lat': lat}
-    except requests.exceptions.RequestException:
+    except requests.exceptions.HTTPError:
+        return {'lon': None, 'lat': None}
+    except requests.exceptions.Timeout:
+        return {'lon': None, 'lat': None}
+    except requests.exceptions.ConnectionError:
         return {'lon': None, 'lat': None}
