@@ -35,7 +35,6 @@ class AddressSerializer(ModelSerializer):
             lat=coordinates['lat'],
             lon=coordinates['lon'],
         )
-        print(address.id)
         return address
 
 
@@ -44,9 +43,17 @@ class CustomerSerializer(ModelSerializer):
         model = Customer
         fields = ['firstname', 'lastname', 'phonenumber']
 
-    def create(self, validated_data):
+    def create(self, validated_data, address):
+        print('creating customer')
         print(validated_data)
-        return validated_data
+        customer, _ = Customer.objects.get_or_create(
+            firstname=validated_data['firstname'],
+            lastname=validated_data['lastname'],
+            phonenumber=validated_data['phonenumber'],
+            address=address
+        )
+
+        return customer
 
 
 class CartSerializer(ModelSerializer):
@@ -85,17 +92,10 @@ class OrderSerializer(ModelSerializer):
     #     address = serializer.create(validated_data=serializer.validated_data)
     #     return address
 
-    def validate_customer(self, value):
-        print('validate_customer')
-        print(value)
-        serializer = CustomerSerializer(many=False, data=value)
-        serializer.is_valid()
-        customer = serializer.create(validated_data=serializer.validated_data)
-        return customer
-
     def create(self, validated_data):
         address = AddressSerializer.create(self, validated_data=validated_data['address'])
-        return address
+        customer = CustomerSerializer.create(self, validated_data=validated_data['customer'], address=address)
+        return address, customer
 
     class Meta:
         model = Order
@@ -199,15 +199,15 @@ def register_order(request):
     firstname = serializer.validated_data['customer']['firstname']
     lastname = serializer.validated_data['customer']['lastname']
     phonenumber = PhoneNumber.from_string(serializer.validated_data['customer']['phonenumber'] )
-    address = serializer.create(serializer.validated_data)
+    address, customer = serializer.create(serializer.validated_data)
 
 
-    customer, _ = Customer.objects.get_or_create(
-        firstname=firstname,
-        lastname=lastname,
-        phonenumber=phonenumber,
-        address=address
-    )
+    # customer, _ = Customer.objects.get_or_create(
+    #     firstname=firstname,
+    #     lastname=lastname,
+    #     phonenumber=phonenumber,
+    #     address=address
+    # )
     order, _ = Order.objects.get_or_create(
         customer=customer,
         address=address,
