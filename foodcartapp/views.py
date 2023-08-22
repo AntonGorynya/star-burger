@@ -52,7 +52,6 @@ class CustomerSerializer(ModelSerializer):
             phonenumber=validated_data['phonenumber'],
             address=address
         )
-
         return customer
 
 
@@ -61,15 +60,16 @@ class CartSerializer(ModelSerializer):
             model = Cart
             fields = ['product', 'quantity']
 
-    def create(self, validated_data):
+    def create(self, validated_data, order):
+        print('creating products')
         print(validated_data)
-        # Cart.objects.get_or_create(
-        #     product=validated_data['product'],
-        #     quantity=validated_data['quantity'],
-        #     order=order,
-        #     fixed_price=validated_data['quantity'] * validated_data['product'].price
-        # )
-
+        for product in validated_data:
+            Cart.objects.get_or_create(
+                product=product['product'],
+                quantity=product['quantity'],
+                order=order,
+                fixed_price=product['quantity']*product['product'].price
+            )
 
 
 class OrderSerializer(ModelSerializer):
@@ -84,18 +84,19 @@ class OrderSerializer(ModelSerializer):
             raise ValidationError('Empty product list')
         return value
 
-    # def validate_address(self, value):
-    #     print('validate_address')
-    #     print(value)
-    #     serializer = AddressSerializer(many=False, data=value)
-    #     serializer.is_valid()
-    #     address = serializer.create(validated_data=serializer.validated_data)
-    #     return address
-
     def create(self, validated_data):
         address = AddressSerializer.create(self, validated_data=validated_data['address'])
         customer = CustomerSerializer.create(self, validated_data=validated_data['customer'], address=address)
-        return address, customer
+        order, _ = Order.objects.get_or_create(
+            customer=customer,
+            address=address,
+            start_date=datetime.datetime.now(),
+            end_date=None,
+        )
+        CartSerializer.create(self, validated_data=validated_data['products'], order=order)
+
+
+        return address, customer, order
 
     class Meta:
         model = Order
@@ -195,32 +196,8 @@ def register_order(request):
     logging.debug(serializer.validated_data)
     print('data\n', serializer.validated_data)
 
-    products = serializer.validated_data['products']
-    firstname = serializer.validated_data['customer']['firstname']
-    lastname = serializer.validated_data['customer']['lastname']
-    phonenumber = PhoneNumber.from_string(serializer.validated_data['customer']['phonenumber'] )
-    address, customer = serializer.create(serializer.validated_data)
+    address, customer, order = serializer.create(serializer.validated_data)
 
-
-    # customer, _ = Customer.objects.get_or_create(
-    #     firstname=firstname,
-    #     lastname=lastname,
-    #     phonenumber=phonenumber,
-    #     address=address
-    # )
-    order, _ = Order.objects.get_or_create(
-        customer=customer,
-        address=address,
-        start_date=datetime.datetime.now(),
-        end_date=None,
-    )
-    for product in products:
-        Cart.objects.get_or_create(
-            product=product['product'],
-            quantity=product['quantity'],
-            order=order,
-            fixed_price=product['quantity']*product['product'].price
-        )
     context = {
         'id': order.id,
         'firstname': customer.firstname,
