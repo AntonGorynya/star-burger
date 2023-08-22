@@ -1,4 +1,5 @@
 import datetime
+import logging
 import requests
 
 from django.http import JsonResponse
@@ -15,23 +16,37 @@ from .models import Product, Customer, Address, Cart, Order
 env = Env()
 env.read_env()
 yandex_key = env('YANDEX_KEY')
+logger = logging.getLogger('foodcartapp')
+logger.setLevel(logging.DEBUG)
 
 
 class AddressSerializer(ModelSerializer):
-    class Meta:        
+    class Meta:
         model = Address
         fields = ['address']
 
-
-    def create(self, validated_data):        
-        address = validated_data['address'] 
+    def create(self, validated_data):
+        print('Create address')
+        print(validated_data['address'])
+        address = validated_data['address']
         coordinates = fetch_coordinates(yandex_key, address)
         address, _ = Address.objects.get_or_create(
             address=address,
             lat=coordinates['lat'],
             lon=coordinates['lon'],
         )
+        print(address.id)
         return address
+
+
+class CustomerSerializer(ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['firstname', 'lastname', 'phonenumber']
+
+    def create(self, validated_data):
+        print(validated_data)
+        return validated_data
 
 
 class CartSerializer(ModelSerializer):
@@ -39,28 +54,52 @@ class CartSerializer(ModelSerializer):
             model = Cart
             fields = ['product', 'quantity']
 
+    def create(self, validated_data):
+        print(validated_data)
+        # Cart.objects.get_or_create(
+        #     product=validated_data['product'],
+        #     quantity=validated_data['quantity'],
+        #     order=order,
+        #     fixed_price=validated_data['quantity'] * validated_data['product'].price
+        # )
+
 
 
 class OrderSerializer(ModelSerializer):
-    address = CharField()              
-    products = ListField()
+    address = AddressSerializer(many=False)
+    customer = CustomerSerializer(many=False)
+    products = CartSerializer(many=True)
 
     def validate_products(self, value):
+        print('validate_products')
+        print(value)
         if not value:
             raise ValidationError('Empty product list')
-        serializer = CartSerializer(many=True, data=value)
-        serializer.is_valid(raise_exception=True)
-        return serializer.validated_data
+        return value
 
-    def validate_address(self, value):        
-        serializer = AddressSerializer(many=False, data={'address': value})
-        serializer.is_valid(raise_exception=True)
-        address = serializer.create(serializer.validated_data)
+    # def validate_address(self, value):
+    #     print('validate_address')
+    #     print(value)
+    #     serializer = AddressSerializer(many=False, data=value)
+    #     serializer.is_valid()
+    #     address = serializer.create(validated_data=serializer.validated_data)
+    #     return address
+
+    def validate_customer(self, value):
+        print('validate_customer')
+        print(value)
+        serializer = CustomerSerializer(many=False, data=value)
+        serializer.is_valid()
+        customer = serializer.create(validated_data=serializer.validated_data)
+        return customer
+
+    def create(self, validated_data):
+        address = AddressSerializer.create(self, validated_data=validated_data['address'])
         return address
 
     class Meta:
-        model = Customer
-        fields = ['firstname', 'lastname', 'phonenumber', 'address', 'products']
+        model = Order
+        fields = ['address', 'customer', 'products']
 
 
 def fetch_coordinates(apikey, address):
@@ -139,28 +178,30 @@ def product_list_api(request):
 @api_view(['POST'])
 @transaction.atomic
 def register_order(request):
+    customer = {}
     web_order = request.data
-    print('wev_data\n', web_order)
+    customer['firstname'] = web_order.pop('firstname')
+    customer['lastname'] = web_order.pop('lastname')
+    customer['phonenumber'] = web_order.pop('phonenumber')
+    web_order['address'] = {'address': web_order['address']}
+    web_order['customer'] = customer
+    print('web_order\n', web_order)
+    logging.info(web_order)
+
     serializer = OrderSerializer(data=web_order)
     serializer.is_valid()
-    print('errors:\n',serializer.errors)
-
-    print('seroalized\n',serializer.validated_data)
+    logging.debug(serializer.errors)
+    print('errors\n', serializer.errors)
+    logging.debug(serializer.validated_data)
+    print('data\n', serializer.validated_data)
 
     products = serializer.validated_data['products']
-    firstname = serializer.validated_data['firstname']
-    lastname = serializer.validated_data['lastname']
-    address = serializer.validated_data['address']
-    phonenumber = PhoneNumber.from_string(serializer.validated_data['phonenumber'] )
+    firstname = serializer.validated_data['customer']['firstname']
+    lastname = serializer.validated_data['customer']['lastname']
+    phonenumber = PhoneNumber.from_string(serializer.validated_data['customer']['phonenumber'] )
+    address = serializer.create(serializer.validated_data)
 
-    print(address)
-    #coordinates = fetch_coordinates(yandex_key, address)
 
-    # address, _ = Address.objects.get_or_create(
-    #     address=address,
-    #     lat=coordinates['lat'],
-    #     lon=coordinates['lon'],
-    # )
     customer, _ = Customer.objects.get_or_create(
         firstname=firstname,
         lastname=lastname,
@@ -189,3 +230,4 @@ def register_order(request):
     }
     print(f'context:\n{context}')
     return Response(context)
+
