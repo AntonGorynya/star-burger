@@ -135,11 +135,11 @@ class OrderAdmin(admin.ModelAdmin):
     ]
     def response_change(self, request, obj):
         response = super().response_change(request, obj)
-        if 'next' in request.GET:
-            try:
+        try:
+            if 'next' in request.GET:
                 URLValidator(request.GET['next'])
                 return HttpResponseRedirect(request.GET['next'])
-            except ValidationError:
-                return response
-        else:
+        except ValidationError:
+            return response
+        finally:
             return response
