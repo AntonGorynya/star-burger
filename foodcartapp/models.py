@@ -153,7 +153,7 @@ class Customer(models.Model):
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = PhoneNumberField('Номер телефона')
-    address = models.ForeignKey(Address, related_name='customer', on_delete=models.SET_DEFAULT, default='')
+    address = models.ForeignKey(Address, related_name='customer', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.firstname}  {self.lastname}"
@@ -165,7 +165,7 @@ class Order(models.Model):
     start_date = models.DateTimeField('Дата заказа', db_index=True, default=now)
     called_at = models.DateTimeField('Дата время звонка', db_index=True, blank=True, null=True)
     end_date = models.DateTimeField('Дата завершения заказа', null=True, blank=True, db_index=True)
-    comments = models.TextField(null=True, blank=True, verbose_name='Комментарий к заказу', max_length=500, default='')
+    comments = models.TextField(null=True, blank=True, verbose_name='Комментарий к заказу', max_length=500)
     restaurant = models.ForeignKey(
         Restaurant,
         related_name='orders',
@@ -209,10 +209,6 @@ class OrderedProduct(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0)],
     )
-
-    def position_sum(self):
-        if self.fixed_price:
-            return self.quantity * self.fixed_price
 
     objects = CartQuerySet.as_manager()
 
