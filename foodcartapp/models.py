@@ -199,7 +199,7 @@ class Order(models.Model):
         return f'{self.id} {self.address} {self.start_date} {self.end_date}'
 
 
-class Cart(models.Model):
+class OrderedProduct(models.Model):
     product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.PositiveIntegerField('количество', validators=[MaxValueValidator(100)])
     order = models.ForeignKey(Order, related_name='cart', on_delete=models.CASCADE)

@@ -3,7 +3,7 @@ import requests
 
 from star_burger.settings import YANDEX_KEY
 from rest_framework.serializers import ValidationError, ModelSerializer
-from .models import Product, Customer, Address, Cart, Order
+from .models import Product, Customer, Address, OrderedProduct, Order
 
 
 class AddressSerializer(ModelSerializer):
@@ -41,16 +41,16 @@ class CustomerSerializer(ModelSerializer):
         return customer
 
 
-class CartSerializer(ModelSerializer):
+class OrderedProductSerializer(ModelSerializer):
     class Meta:
-            model = Cart
+            model = OrderedProduct
             fields = ['product', 'quantity']
 
     def create(self, validated_data, order):
         print('creating products')
         print(validated_data)
         for product in validated_data:
-            Cart.objects.get_or_create(
+            OrderedProduct.objects.get_or_create(
                 product=product['product'],
                 quantity=product['quantity'],
                 order=order,
@@ -61,7 +61,7 @@ class CartSerializer(ModelSerializer):
 class OrderSerializer(ModelSerializer):
     address = AddressSerializer(many=False)
     customer = CustomerSerializer(many=False)
-    products = CartSerializer(many=True)
+    products = OrderedProductSerializer(many=True)
 
     def validate_products(self, value):
         print('validate_products')
@@ -79,7 +79,7 @@ class OrderSerializer(ModelSerializer):
             start_date=datetime.datetime.now(),
             end_date=None,
         )
-        CartSerializer.create(self, validated_data=validated_data['products'], order=order)
+        OrderedProductSerializer.create(self, validated_data=validated_data['products'], order=order)
         return address, customer, order
 
     class Meta:

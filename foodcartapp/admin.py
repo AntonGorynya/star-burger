@@ -8,7 +8,7 @@ from django import forms
 from .models import Product
 from .models import ProductCategory
 from .models import Restaurant
-from .models import RestaurantMenuItem, Customer, Address, Cart, Order
+from .models import RestaurantMenuItem, Customer, Address, OrderedProduct, Order
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -16,8 +16,8 @@ class RestaurantMenuItemInline(admin.TabularInline):
     extra = 0
 
 
-class CartInline(admin.TabularInline):
-    model = Cart
+class OrderedProductInline(admin.TabularInline):
+    model = OrderedProduct
     readonly_fields = ['position_sum']
     extra = 0
 
@@ -122,15 +122,15 @@ class CustomerAdmin(admin.ModelAdmin):
 class AddressAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Cart)
-class CartAdmin(admin.ModelAdmin):
+@admin.register(OrderedProduct)
+class OrderedProductAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ['start_date']
     inlines = [
-        CartInline,
+        OrderedProductInline,
     ]
     def response_change(self, request, obj):
         response = super().response_change(request, obj)

@@ -1,16 +1,13 @@
 import logging
-import requests
 
 from django.http import JsonResponse
 from django.templatetags.static import static
 from django.db import transaction
-from phonenumber_field.phonenumber import PhoneNumber
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.serializers import ValidationError, ModelSerializer
 from environs import Env
 
-from .models import Product, Customer, Address, Cart, Order
+from .models import Product
 from .serializers import OrderSerializer
 
 env = Env()
