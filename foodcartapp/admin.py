@@ -22,6 +22,11 @@ class OrderedProductInline(admin.TabularInline):
     readonly_fields = ['position_sum']
     extra = 0
 
+    @admin.display(description="Сумма позиции")
+    def position_sum(self, obj):
+        print(obj) # если убрать, то не работает
+        return obj.quantity * obj.fixed_price
+
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
