@@ -1,6 +1,7 @@
 import datetime
 import requests
 
+from requests.exceptions import HTTPError, Timeout, ConnectionError
 from star_burger.settings import YANDEX_KEY
 from rest_framework.serializers import ValidationError, ModelSerializer
 from .models import Product, Customer, Address, OrderedProduct, Order
@@ -103,9 +104,5 @@ def fetch_coordinates(apikey, address):
         most_relevant = found_places[0]
         lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
         return {'lon': lon, 'lat': lat}
-    except requests.exceptions.HTTPError:
-        return {'lon': None, 'lat': None}
-    except requests.exceptions.Timeout:
-        return {'lon': None, 'lat': None}
-    except requests.exceptions.ConnectionError:
+    except (HTTPError, Timeout, ConnectionError):
         return {'lon': None, 'lat': None}
