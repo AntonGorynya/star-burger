@@ -79,15 +79,11 @@ def register_order(request):
     customer['phonenumber'] = web_order.pop('phonenumber')
     web_order['address'] = {'address': web_order['address']}
     web_order['customer'] = customer
-    print('web_order\n', web_order)
-    logging.info(web_order)
 
     serializer = OrderSerializer(data=web_order)
     serializer.is_valid()
-    logging.debug(serializer.errors)
-    print('errors\n', serializer.errors)
-    logging.debug(serializer.validated_data)
-    print('data\n', serializer.validated_data)
+    if serializer.errors:
+        return Response(serializer.errors)
 
     address, customer, order = serializer.create(serializer.validated_data)
 
@@ -98,5 +94,4 @@ def register_order(request):
         'phonenumber': str(customer.phonenumber),
         'address': address.address
     }
-    print(f'context:\n{context}')
     return Response(context)
