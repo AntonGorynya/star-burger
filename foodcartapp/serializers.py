@@ -1,7 +1,7 @@
 import datetime
-from geo_tools import fetch_coordinates
+from .geo_tools import fetch_coordinates
 from star_burger.settings import YANDEX_KEY
-from rest_framework.serializers import ValidationError, ModelSerializer
+from rest_framework.serializers import ValidationError, ModelSerializer, ListField
 from .models import Customer, Address, OrderedProduct, Order
 
 
@@ -11,8 +11,6 @@ class AddressSerializer(ModelSerializer):
         fields = ['address']
 
     def create(self, validated_data):
-        print('Create address')
-        print(validated_data['address'])
         address = validated_data['address']
         coordinates = fetch_coordinates(YANDEX_KEY, address)
         address, _ = Address.objects.get_or_create(
@@ -29,8 +27,6 @@ class CustomerSerializer(ModelSerializer):
         fields = ['firstname', 'lastname', 'phonenumber']
 
     def create(self, validated_data, address):
-        print('creating customer')
-        print(validated_data)
         customer, _ = Customer.objects.get_or_create(
             firstname=validated_data['firstname'],
             lastname=validated_data['lastname'],
@@ -46,8 +42,6 @@ class OrderedProductSerializer(ModelSerializer):
             fields = ['product', 'quantity']
 
     def create(self, validated_data, order):
-        print('creating products')
-        print(validated_data)
         for product in validated_data:
             OrderedProduct.objects.get_or_create(
                 product=product['product'],
@@ -60,14 +54,7 @@ class OrderedProductSerializer(ModelSerializer):
 class OrderSerializer(ModelSerializer):
     address = AddressSerializer(many=False)
     customer = CustomerSerializer(many=False)
-    products = OrderedProductSerializer(many=True)
-
-    def validate_products(self, value):
-        print('validate_products')
-        print(value)
-        if not value:
-            raise ValidationError('Empty product list')
-        return value
+    products = OrderedProductSerializer(many=True, allow_empty=False)
 
     def create(self, validated_data):
         address = AddressSerializer.create(self, validated_data=validated_data['address'])
@@ -84,3 +71,4 @@ class OrderSerializer(ModelSerializer):
     class Meta:
         model = Order
         fields = ['address', 'customer', 'products']
+
