@@ -11,7 +11,7 @@ env.read_env()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
+ENVIRONMENT = env('ENVIRONMENT', 'production')
 DEBUG = env.bool('DEBUG', False)
 SECRET_KEY = env('SECRET_KEY')
 ROLLBAR_KEY = env('ROLLBAR_KEY')
@@ -132,7 +132,7 @@ STATICFILES_DIRS = [
 
 ROLLBAR = {
     'access_token': ROLLBAR_KEY,
-    'environment': 'development' if DEBUG else 'production',
+    'environment': ENVIRONMENT,
     'code_version': '1.0',
     'root': BASE_DIR,
 }
