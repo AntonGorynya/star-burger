@@ -16,6 +16,7 @@ DEBUG = env.bool('DEBUG', False)
 SECRET_KEY = env('SECRET_KEY')
 ROLLBAR_KEY = env('ROLLBAR_KEY')
 YANDEX_KEY = env('YANDEX_KEY')
+DB_URl = env.dj_db_url('DB_URL')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', '10.176.46.1', '80.249.147.35', 'localhost'])
 
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_dump_load_utf8',
     'debug_toolbar',
     'phonenumber_field',
     'rest_framework',
@@ -86,9 +88,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:////{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
-    )
+    'default': {
+        'ENGINE': DB_URl['ENGINE'],
+        'NAME': DB_URl['NAME'],
+        'USER': DB_URl['USER'],
+        'PASSWORD': DB_URl['PASSWORD'],
+        'HOST': DB_URl['HOST'],
+        'PORT': DB_URl['PORT'],
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [

@@ -47,25 +47,34 @@ python -m venv venv
 - Windows: `.\venv\Scripts\activate`
 - MacOS/Linux: `source venv/bin/activate`
 
-
 Установите зависимости в виртуальное окружение:
 ```sh
 pip install -r requirements.txt
 ```
 
-### Заполните .env
+### Установите Postgres
+Рекомендуется использовать Postgres при деплое проекта. Вы можете скачать его с официального [сайта](https://www.postgresql.org/download/)
 
-Определите переменную окружения `SECRET_KEY`. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
-```sh
-SECRET_KEY=django-insecure-0if40nf4nf93n4
+### Заполните .env
+Файл `.env` в каталоге `star_burger/` вида:
+```commandline
+SECRET_KEY='12345asdv'
+YANDEX_KEY='0000-1111-2222-3333-4444'
+DEBUG='False'
+DB_URL='postgres://USER:PASSWORD@HOST:PORT/NAME'
+ROLLBAR_KEY='12345abc'
 ```
+
+- `SECRET_KEY` секретный ключ вашего проекта на django
 Вы можете создать ключ  выполнив команду
 ```commandline
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
-Определите перменную окружения `YANDEX_KEY`. Переменная хранит ключ от API яндекса для работы с геокодером. Можете получить  по https://developer.tech.yandex.ru/
-Определите перменную окружения `ROLLBAR_KEY`. Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на сайте и создайте новый проект. Устанвите значение перменной равной токену `post_server_item` в настройках проекта.
-Определите название окружение в перемменной `ENVIRONMENT` по желанию.
+-  `YANDEX_KEY`. Переменная хранит ключ от API яндекса для работы с геокодером. Можете получить  по https://developer.tech.yandex.ru/
+-  `ROLLBAR_KEY`. Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на сайте и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
+-  `ENVIRONMENT` название окружения для сервиса ROLLBAR. Опционально.
+-  `DB_URL`. Указав URL для подключения к бд. Примеры можно посмотреть тут https://github.com/jazzband/dj-database-url#id13
+- `DEBUG` Включение и отключение режима отладки
 ### Создайте БД
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
