@@ -200,9 +200,9 @@ class Order(models.Model):
 
 
 class OrderedProduct(models.Model):
-    product = models.ForeignKey(Product, related_name='carts', on_delete=models.CASCADE, verbose_name='Товар')
+    product = models.ForeignKey(Product, related_name='products', on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.PositiveIntegerField('количество', validators=[MaxValueValidator(100)])
-    order = models.ForeignKey(Order, related_name='cart', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name='orderedproduct', on_delete=models.CASCADE)
     fixed_price = models.DecimalField(
         'цена за штуку',
         max_digits=8,
