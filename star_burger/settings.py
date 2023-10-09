@@ -18,7 +18,7 @@ ROLLBAR_KEY = env('ROLLBAR_KEY')
 YANDEX_KEY = env('YANDEX_KEY')
 DB_URl = env.dj_db_url('DB_URL')
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', '10.176.46.1', '80.249.147.35', 'localhost'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', '10.176.46.1', '80.249.147.35', 'localhost', 'antongoryniadev.ru'])
 
 INSTALLED_APPS = [
     'foodcartapp.apps.FoodcartappConfig',
