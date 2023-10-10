@@ -13,6 +13,29 @@
 
 Третий интерфейс — это админка. Преимущественно им пользуются программисты при разработке сайта. Также сюда заходит менеджер, чтобы обновить меню ресторанов Star Burger.
 
+# Подготовка
+создайте файл `/etc/systemd/system/star-burger.service` вида
+```sh
+[Unit]
+Description=gunicorn daemon
+After=network.target
+After=postgresql.service
+Requires=postgresql.service
+
+
+
+[Service]
+WorkingDirectory=/opt/star-burger/star-burger
+ExecStart=gunicorn -w 3 -b 127.0.0.1:8080 star_burger.wsgi:application
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+
 # Запуск сайта
 Ниже описаны шаги по запуску сайта
 
@@ -173,6 +196,13 @@ Parcel будет следить за файлами в каталоге `bundle
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `YANDEX_KEY` - ключ от API яндекса для работы с геокодером. Можете получить  по https://developer.tech.yandex.ru/
 - `ROLLBAR_KEY` - ключ от сервиса [Rollback](https://rollbar.com)
+
+## Обновить 
+Запустите скрипт
+```sh
+chmod +x deploy_star_burger 
+deploy_star_burger 
+```
 
 ## Цели проекта
 
