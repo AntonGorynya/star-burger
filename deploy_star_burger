@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+echo "Update Repositary..."
+git pull 
+
+if [ -e "venv/bin/activate" ]; then
+    echo "activating venv"
+    source venv/bin/activate
+else 
+    echo "Creating venv..."
+    python -m venv venv
+    source venv/bin/activate
+fi 
+
+echo "Installing requirements..."
+pip install -r requirements.txt
+
+echo "Installing node"
+apt install npm
+npm install -g n
+n 16.16.0
+npm ci --dev
+./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url="./"
+
+echo "Making migrations.."
+python3 manage.py makemigrations 
+echo "Migrating..." 
+python3 manage.py migrate
+echo "collect static..." 
+python3 manage.py collectstatic
+echo "Reload nginx"
+systemctl reload nginx.service
+echo "Reload Gunicorn"
+systemctl reload star-burger.service
+
+
+echo "Deployed"
