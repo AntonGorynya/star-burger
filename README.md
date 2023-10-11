@@ -115,25 +115,24 @@ ROLLBAR_KEY='12345abc'
 ```commandline
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
--  `YANDEX_KEY`. Переменная хранит ключ от API яндекса для работы с геокодером. Можете получить  по https://developer.tech.yandex.ru/
--  `ROLLBAR_KEY`. Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на сайте и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
+-  `YANDEX_KEY`. Переменная хранит ключ от [API яндекса](https://developer.tech.yandex.ru/) для работы с геокодером.
+-  `ROLLBAR_KEY`. Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на [Rollback](https://rollbar.com) и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
 -  `ENVIRONMENT` название окружения для сервиса ROLLBAR. Опционально.
 -  `DB_URL`. Указав URL для подключения к бд. Примеры можно посмотреть тут https://github.com/jazzband/dj-database-url#id13
-- `DEBUG` Включение и отключение режима отладки
-
-
+- `DEBUG` Включение и отключение режима отладки. Поставьте `False`.
+- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 
 # Запуск сайта
-Ниже описаны шаги по запуску сайта
 
+## Автоматическое развертывание
 
-
-Перейдите в каталог проекта:
+Перейдите в каталог проекта и запустите скрипт деплоя:
 ```sh
 cd star-burger
+./deploy_star_burger
 ```
 
-
+## Ручное развертывание
 ### Cоздайте виртуальное окружение
 В каталоге проекта создайте виртуальное окружение:
 ```sh
@@ -151,9 +150,10 @@ pip install -r requirements.txt
 
 
 ### Создайте БД
-Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
+Создайте файл базы данных и отмигрируйте её следующей командой:
 
 ```sh
+python manage.py makemigrations
 python manage.py migrate
 ```
 
@@ -239,21 +239,6 @@ Parcel будет следить за файлами в каталоге `bundle
 
 ```sh
 ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
-```
-
-Настроить бэкенд: создать файл `.env` в каталоге `star_burger/` со следующими настройками:
-
-- `DEBUG` — дебаг-режим. Поставьте `False`.
-- `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
-- `YANDEX_KEY` - ключ от API яндекса для работы с геокодером. Можете получить  по https://developer.tech.yandex.ru/
-- `ROLLBAR_KEY` - ключ от сервиса [Rollback](https://rollbar.com)
-
-## Обновить
-Запустите скрипт
-```sh
-chmod +x deploy_star_burger
-deploy_star_burger
 ```
 
 ## Цели проекта
