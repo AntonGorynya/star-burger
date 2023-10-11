@@ -14,7 +14,32 @@
 Третий интерфейс — это админка. Преимущественно им пользуются программисты при разработке сайта. Также сюда заходит менеджер, чтобы обновить меню ресторанов Star Burger.
 
 # Подготовка
-создайте файл `/etc/systemd/system/star-burger.service` вида
+
+Сайт предполагает свою работу в связки с Nginx и Gunicorn. Ниже рассмотрим обязательные шаги
+
+### Установите Python
+[Установите Python](https://www.python.org/), если этого ещё не сделали.
+
+Проверьте, что `python` установлен и корректно настроен. Запустите его в командной строке:
+```sh
+python --version
+```
+**Важно!** Версия Python должна быть не ниже 3.6.
+
+Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии.
+
+### Скачайте код:
+```sh
+git clone https://github.com/devmanorg/star-burger.git
+```
+
+### Установите Gunicorn
+
+```commandline
+pip install gunicorn
+```
+
+Cоздайте файл `/etc/systemd/system/star-burger.service` вида
 ```sh
 [Unit]
 Description=gunicorn daemon
@@ -33,50 +58,47 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 ```
+Для запуска сайта на локальном IP адресе.
+Укажите вашу WorkingDirectory.
 
+### Установите NGINX
 
-
-# Запуск сайта
-Ниже описаны шаги по запуску сайта
-
-### Скачайте код:
-```sh
-git clone https://github.com/devmanorg/star-burger.git
+```commandline
+apt install nginx
 ```
+Создайте файл `/etc/nginx/sites-enabled/star-burger` вида
+```commandline
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name 80.249.147.35 antongoryniadev.ru;
 
-Перейдите в каталог проекта:
-```sh
-cd star-burger
+    if ($scheme = 'http') {
+        return 301 https://$host$request_uri;
+    }
+
+    ssl_certificate /etc/letsencrypt/live/antongoryniadev.ru/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/antongoryniadev.ru/privkey.pem; # managed by Certbot
+
+    location /media/ {
+        alias /opt/star-burger/star-burger/media/;
+    }
+
+    location /static/ {
+        alias /opt/star-burger/star-burger/staticfiles/;
+    }
+
+    location / {
+        include '/etc/nginx/proxy_params';
+        proxy_pass http://127.0.0.1:8080/;
+    }
+}
 ```
-
-### Установите Python
-[Установите Python](https://www.python.org/), если этого ещё не сделали.
-
-Проверьте, что `python` установлен и корректно настроен. Запустите его в командной строке:
-```sh
-python --version
-```
-**Важно!** Версия Python должна быть не ниже 3.6.
-
-Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии.
-
-### Cоздайте виртуальное окружение
-В каталоге проекта создайте виртуальное окружение:
-```sh
-python -m venv venv
-```
-Активируйте его. На разных операционных системах это делается разными командами:
-
-- Windows: `.\venv\Scripts\activate`
-- MacOS/Linux: `source venv/bin/activate`
-
-Установите зависимости в виртуальное окружение:
-```sh
-pip install -r requirements.txt
-```
+При необходимости настройте SSL. Укажите пути для media и static папок.
 
 ### Установите Postgres
 Рекомендуется использовать Postgres при деплое проекта. Вы можете скачать его с официального [сайта](https://www.postgresql.org/download/)
+
 
 ### Заполните .env
 Файл `.env` в каталоге `star_burger/` вида:
@@ -98,6 +120,36 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 -  `ENVIRONMENT` название окружения для сервиса ROLLBAR. Опционально.
 -  `DB_URL`. Указав URL для подключения к бд. Примеры можно посмотреть тут https://github.com/jazzband/dj-database-url#id13
 - `DEBUG` Включение и отключение режима отладки
+
+
+
+# Запуск сайта
+Ниже описаны шаги по запуску сайта
+
+
+
+Перейдите в каталог проекта:
+```sh
+cd star-burger
+```
+
+
+### Cоздайте виртуальное окружение
+В каталоге проекта создайте виртуальное окружение:
+```sh
+python -m venv venv
+```
+Активируйте его. На разных операционных системах это делается разными командами:
+
+- Windows: `.\venv\Scripts\activate`
+- MacOS/Linux: `source venv/bin/activate`
+
+Установите зависимости в виртуальное окружение:
+```sh
+pip install -r requirements.txt
+```
+
+
 ### Создайте БД
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
@@ -197,11 +249,11 @@ Parcel будет следить за файлами в каталоге `bundle
 - `YANDEX_KEY` - ключ от API яндекса для работы с геокодером. Можете получить  по https://developer.tech.yandex.ru/
 - `ROLLBAR_KEY` - ключ от сервиса [Rollback](https://rollbar.com)
 
-## Обновить 
+## Обновить
 Запустите скрипт
 ```sh
-chmod +x deploy_star_burger 
-deploy_star_burger 
+chmod +x deploy_star_burger
+deploy_star_burger
 ```
 
 ## Цели проекта
