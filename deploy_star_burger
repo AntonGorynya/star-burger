@@ -1,11 +1,11 @@
 #!/bin/bash
 
 set -a
-ROLLBAR_KEY=$(cat star_burger/.env  | grep ROLLBAR)
+export $(cat star_burger/.env  | grep ROLLBAR | tr -d \")
 set +a
 
 git pull
-GIT_HASH = $(git rev-parse --short HEAD)
+GIT_HASH="\"$(git rev-parse --short HEAD)\""
 
 if [ -e "venv/bin/activate" ]; then
     echo "activating venv"
