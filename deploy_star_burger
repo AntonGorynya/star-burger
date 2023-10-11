@@ -39,4 +39,4 @@ systemctl restart star-burger.service
 
 echo "Deployed"
 
-curl -H "X-Rollbar-Access-Token: ${ROLLBAR_KEY}" -H "Content-Type: application/json" -X POST 'https://api.rollbar.com/api/1/deploy' -d "{\"environment\": \"production\", \"revision\": \"${GIT_HASH}\", \"rollbar_name\": \"Anton\", \"local_username\": \"circle-ci\", \"comment\": \"deployment\", \"status\": \"succeeded\"}"
+curl -H "X-Rollbar-Access-Token: ${ROLLBAR_KEY}" -H "Content-Type: application/json" -X POST 'https://api.rollbar.com/api/1/deploy' -d "{\"environment\": \"production\", \"revision\": \"${GIT_HASH}\", \"rollbar_name\": \"Anton\", \"local_username\": \"$(whoami)\", \"comment\": \"deployment\", \"status\": \"succeeded\"}"
