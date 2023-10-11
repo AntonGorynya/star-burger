@@ -1,8 +1,11 @@
 #!/bin/bash
 
-set -e
-echo "Update Repositary..."
+set -a
+ROLLBAR_KEY=$(cat star_burger/.env  | grep ROLLBAR)
+set +a
+
 git pull
+GIT_HASH = $(git rev-parse --short HEAD)
 
 if [ -e "venv/bin/activate" ]; then
     echo "activating venv"
@@ -35,3 +38,5 @@ echo "Reload Gunicorn"
 systemctl restart star-burger.service
 
 echo "Deployed"
+
+curl -H "X-Rollbar-Access-Token: ${ROLLBAR_KEY}" -H "Content-Type: application/json" -X POST 'https://api.rollbar.com/api/1/deploy' -d "{"environment": "production", "revision": "${GIT_HASH}", "rollbar_name": "Anton", "local_username": "circle-ci", "comment": "deployment", "status": "succeeded"}"
