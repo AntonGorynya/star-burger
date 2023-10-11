@@ -31,7 +31,7 @@ python3 manage.py makemigrations
 echo "Migrating..."
 python3 manage.py migrate
 echo "collect static..."
-python3 manage.py collectstatic
+python3 manage.py collectstatic --noinput
 echo "Reload nginx"
 systemctl reload nginx.service
 echo "Reload Gunicorn"
