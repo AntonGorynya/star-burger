@@ -1,6 +1,6 @@
 # Сайт доставки еды Star Burger
 
-Это сайт сети ресторанов Star Burger. Здесь можно заказать превосходные бургеры с доставкой на дом. Демо версия сайта доступна по ссылке https://antongoryniadev.ru/ 
+Это сайт сети ресторанов Star Burger. Здесь можно заказать превосходные бургеры с доставкой на дом. Демо версия сайта доступна по ссылке https://antongoryniadev.ru/
 
 ![скриншот сайта](https://dvmn.org/filer/canonical/1594651635/686/)
 
@@ -108,6 +108,7 @@ YANDEX_KEY='0000-1111-2222-3333-4444'
 DEBUG='False'
 DB_URL='postgres://USER:PASSWORD@HOST:PORT/NAME'
 ROLLBAR_KEY='12345abc'
+ALLOWED_HOSTS=1.1.1.1,yourdomain.ru
 ```
 
 - `SECRET_KEY` секретный ключ вашего проекта на django
