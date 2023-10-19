@@ -16,7 +16,6 @@ DEBUG = env.bool('DEBUG', False)
 SECRET_KEY = env('SECRET_KEY')
 ROLLBAR_KEY = env('ROLLBAR_KEY')
 YANDEX_KEY = env('YANDEX_KEY')
-DB_URl = env.dj_db_url('DB_URL')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS',  ['127.0.0.1', 'localhost'])
 
 
@@ -88,14 +87,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 DATABASES = {
-    'default': {
-        'ENGINE': DB_URl['ENGINE'],
-        'NAME': DB_URl['NAME'],
-        'USER': DB_URl['USER'],
-        'PASSWORD': DB_URl['PASSWORD'],
-        'HOST': DB_URl['HOST'],
-        'PORT': DB_URl['PORT'],
-    }
+    'default': dj_database_url.config(
+        conn_max_age=600,
+        conn_health_checks=True,
+    ),
 }
 
 AUTH_PASSWORD_VALIDATORS = [
