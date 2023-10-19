@@ -117,7 +117,7 @@ ALLOWED_HOSTS=1.1.1.1,yourdomain.ru
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
 -  `YANDEX_KEY`. Переменная хранит ключ от [API яндекса](https://developer.tech.yandex.ru/) для работы с геокодером.
--  `ROLLBAR_KEY`. Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на [Rollback](https://rollbar.com) и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
+-  `ROLLBAR_KEY`. (Опционально)Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на [Rollback](https://rollbar.com) и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
 -  `ENVIRONMENT` название окружения для сервиса ROLLBAR. Опционально.
 -  `DB_URL`. Указав URL для подключения к бд. Примеры можно посмотреть тут https://github.com/jazzband/dj-database-url#id13
 - `DEBUG` Включение и отключение режима отладки. Поставьте `False`.

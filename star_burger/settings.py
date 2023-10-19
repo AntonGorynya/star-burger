@@ -14,7 +14,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 ENVIRONMENT = env('ENVIRONMENT', 'production')
 DEBUG = env.bool('DEBUG', False)
 SECRET_KEY = env('SECRET_KEY')
-ROLLBAR_KEY = env('ROLLBAR_KEY')
+ROLLBAR_KEY = env('ROLLBAR_KEY', False)
 YANDEX_KEY = env('YANDEX_KEY')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS',  ['127.0.0.1', 'localhost'])
 
@@ -131,10 +131,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "bundles"),
 ]
 
-
-ROLLBAR = {
-    'access_token': ROLLBAR_KEY,
-    'environment': ENVIRONMENT,
-    'code_version': '1.0',
-    'root': BASE_DIR,
-}
+if ROLLBAR_KEY:
+    ROLLBAR = {
+        'access_token': ROLLBAR_KEY,
+        'environment': ENVIRONMENT,
+        'code_version': '1.0',
+        'root': BASE_DIR,
+    }
