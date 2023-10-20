@@ -19,12 +19,8 @@ fi
 echo "Installing requirements..."
 pip install -r requirements.txt
 
-echo "Installing node"
-apt install npm
-npm install -g n
-n 16.16.0
+echo "Installing node packages"
 npm ci --dev
-
 
 echo "Making migrations.."
 python3 manage.py makemigrations

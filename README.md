@@ -179,8 +179,14 @@ python manage.py runserver
 
 [Установите Node.js](https://nodejs.org/en/), если у вас его ещё нет.
 
-Проверьте, что Node.js и его пакетный менеджер корректно установлены. Если всё исправно, то терминал выведет их версии:
-
+Версия `nodejs` должна быть не младше `10.0` и не старше `16.16`. Лучше ставьте `16.16.0`, её мы тестировали. Версия `npm` не важна. Как обновить Node.js читайте в статье: [How to Update Node.js](https://phoenixnap.com/kb/update-node-js-version).
+Установить `npm` c `nodejs` следующими командами
+```commandline
+apt install npm
+npm install -g n
+n 16.16.0
+```
+Вы можете проверить версии  `npm` c `nodejs`
 ```sh
 nodejs --version
 # v16.16.0
@@ -192,7 +198,6 @@ npm --version
 # 8.11.0
 ```
 
-Версия `nodejs` должна быть не младше `10.0` и не старше `16.16`. Лучше ставьте `16.16.0`, её мы тестировали. Версия `npm` не важна. Как обновить Node.js читайте в статье: [How to Update Node.js](https://phoenixnap.com/kb/update-node-js-version).
 
 Перейдите в каталог проекта и установите пакеты Node.js:
 
