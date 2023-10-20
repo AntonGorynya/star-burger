@@ -25,7 +25,7 @@ npm ci --dev
 echo "Checking migration"
 python3 manage.py makemigrations --dry-run --check
 echo "Migrating..."
-python3 manage.py migrate
+python3 manage.py migrate --noinput
 echo "collect static..."
 python3 manage.py collectstatic --noinput
 echo "Reload nginx"
