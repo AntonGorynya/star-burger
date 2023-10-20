@@ -22,6 +22,8 @@ pip install -r requirements.txt
 echo "Installing node packages"
 npm ci --dev
 
+echo "Checking migration"
+python3 manage.py makemigrations --dry-run --check
 echo "Migrating..."
 python3 manage.py migrate
 echo "collect static..."
