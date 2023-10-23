@@ -21,6 +21,7 @@ pip install -r requirements.txt
 
 echo "Installing node packages"
 npm ci --dev
+./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url="./"
 
 echo "Checking migration"
 python3 manage.py makemigrations --dry-run --check
