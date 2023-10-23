@@ -21,7 +21,8 @@ pip install -r requirements.txt
 
 echo "Installing node packages"
 npm ci --dev
-./node_modules/.bin/parcel  bundles-src/index.js
+echo "Installing front packages"
+./node_modules/.bin/parcel build ./bundles-src/index.js
 
 echo "Checking migration"
 python3 manage.py makemigrations --dry-run --check
