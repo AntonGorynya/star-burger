@@ -154,7 +154,6 @@ pip install -r requirements.txt
 Создайте файл базы данных и отмигрируйте её следующей командой:
 
 ```sh
-python manage.py makemigrations
 python manage.py migrate
 ```
 
