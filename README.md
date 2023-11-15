@@ -176,10 +176,15 @@ python manage.py runserver
 
 ### Через Docker
 Постройте образ с помощью команды
-```docker build```
+```docker build -t fornod:v1```
+Создайте контейнер
+```commandline
+docker run --name fornode -d fornod:v1
+```
+
 Скопируйте данные из Docker образа
 ```commandline
-docker cp 087e76da8312:/usr/app/node_modules  ./
+docker cp fornode:/usr/app/node_modules  ./
 ```
 
 ### Вручную
