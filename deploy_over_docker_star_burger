@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -a
+export $(cat star_burger/.env  | grep ROLLBAR | tr -d \")
+set +a
+
+git pull
+GIT_HASH=$(git rev-parse --short HEAD)
+
+echo "Stop Gunicorn"
+systemctl stop star-burger.service
+
+echo "Creating images"
+docker-compose build
+
+echo "creating containers"
+docker-compose up --no-start
+
+echo "copy static files"
+docker cp  star-burger_static_1:/usr/app/staticfiles /opt/star-burger/star-burger
+docker cp  star-burger_frontend_1:/usr/app/bundles /opt/star-burger/star-burger
+cp assets/*  staticfiles/
+cp bundles/*  staticfiles/
+
+
+echo "Deployed"
+
+curl -H "X-Rollbar-Access-Token: ${ROLLBAR_KEY}" -H "Content-Type: application/json" -X POST 'https://api.rollbar.com/api/1/deploy' -d "{\"environment\": \"production\", \"revision\": \"${GIT_HASH}\", \"rollbar_name\": \"Anton\", \"local_username\": \"$(whoami)\", \"comment\": \"deployment\", \"status\": \"succeeded\"}"
