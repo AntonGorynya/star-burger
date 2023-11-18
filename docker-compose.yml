@@ -1,0 +1,17 @@
+version: '3.4'
+services:
+  star_frontend:
+    build:
+      context: .
+      target: frontend
+  star_static:
+    build:
+      context: .
+      target: static
+  star_gunicorn:
+    build:
+      context: .
+      target: gunicorn
+    network_mode: "host"  
+
+
