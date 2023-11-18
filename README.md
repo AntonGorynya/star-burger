@@ -47,13 +47,10 @@ After=network.target
 After=postgresql.service
 Requires=postgresql.service
 
-
-
 [Service]
 WorkingDirectory=/opt/star-burger/star-burger
-ExecStart=gunicorn -w 3 -b 127.0.0.1:8080 star_burger.wsgi:application
+ExecStart=docker run --network="host" -p 127.0.0.1:8080:8080  star-burger_gunicorn:v1.0
 Restart=always
-
 
 [Install]
 WantedBy=multi-user.target
@@ -125,13 +122,21 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 
 # Запуск сайта
 
-## Автоматическое развертывание
+## Автоматическое развертывание в локальном окружениее
 
 Перейдите в каталог проекта и запустите скрипт деплоя:
 ```sh
 cd star-burger
 ./deploy_star_burger
 ```
+
+## Автоматическое развертывание c помощью Docker
+Перейдите в каталог проекта и запустите скрипт деплоя:
+```sh
+cd star-burger
+./deploy_over_docker_star_burger
+```
+
 
 ## Ручное развертывание
 ### Cоздайте виртуальное окружение
@@ -174,18 +179,6 @@ python manage.py runserver
 
 ## Собрать фронтенд
 
-### Через Docker
-Постройте образ с помощью команды
-```docker build -t fornod:v1```
-Создайте контейнер
-```commandline
-docker run --name fornode -d fornod:v1
-```
-
-Скопируйте данные из Docker образа
-```commandline
-docker cp fornode:/usr/app/node_modules  ./
-```
 
 ### Вручную
 
@@ -261,6 +254,7 @@ Parcel будет следить за файлами в каталоге `bundle
 ```sh
 ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
 ```
+
 
 ## Цели проекта
 
