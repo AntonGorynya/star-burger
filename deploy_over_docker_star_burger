@@ -22,6 +22,8 @@ docker cp  star-burger_frontend_1:/usr/app/bundles /opt/star-burger/star-burger
 cp assets/*  staticfiles/
 cp bundles/*  staticfiles/
 
+echo "Start Gunicorn"
+systemctl start star-burger.service
 
 echo "Deployed"
 
