@@ -1,14 +1,17 @@
 version: '3.4'
 services:
-  star_frontend:
+  frontend:
+    image: star-burger_frontend:v1.0
     build:
       context: .
       target: frontend
-  star_static:
+  static:
+    image: star-burger_static:v1.0
     build:
       context: .
       target: static
-  star_gunicorn:
+  gunicorn:
+    image: star-burger_gunicorn:v1.0
     build:
       context: .
       target: gunicorn
