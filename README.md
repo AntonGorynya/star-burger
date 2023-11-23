@@ -13,18 +13,58 @@
 
 Третий интерфейс — это админка. Преимущественно им пользуются программисты при разработке сайта. Также сюда заходит менеджер, чтобы обновить меню ресторанов Star Burger.
 
-# Варианты установки
+# Установка
 
-Ниже рассмотрено нескольо вариантов по запуску сайта.
+## Установите Postgres
+Рекомендуется использовать Postgres. Вы можете скачать его с официального [сайта](https://www.postgresql.org/download/)
+
+## Скачайте код
+Скачайте код:
+```sh
+git clone https://github.com/devmanorg/star-burger.git
+```
+
+## Заполните .env
+Файл `.env` в каталоге `star_burger/` вида:
+```commandline
+SECRET_KEY='12345asdv'
+YANDEX_KEY='0000-1111-2222-3333-4444'
+DEBUG='True'
+DATABASE_URL='postgres://USER:PASSWORD@HOST:PORT/NAME'
+ALLOWED_HOSTS=1.1.1.1,yourdomain.ru
+```
+
+- `SECRET_KEY` секретный ключ вашего проекта на django
+Вы можете создать ключ выполнив команду
+```commandline
+python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+```
+- `YANDEX_KEY`. Переменная хранит ключ от [API яндекса](https://developer.tech.yandex.ru/) для работы с геокодером.
+- `ROLLBAR_KEY`. (Опционально)Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на [Rollback](https://rollbar.com) и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
+- `ENVIRONMENT` название окружения для сервиса ROLLBAR. Опционально.
+- `DB_URL`. Указав URL для подключения к бд. Примеры можно посмотреть тут https://github.com/jazzband/dj-database-url#id13
+- `DEBUG` Включение и отключение режима отладки. Поставьте `False`.
+- `DATABASE_URL` URL для подключения к внешней БД Postgre
+- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+
+## Варианты установки
+
+Ниже рассмотрено несколько вариантов по запуску сайта.
 
 - [Запуск dev-верисии](README_dev.md)
-- [через докер](#docker)
-- [на физическом сервере](#Physical)
+- [Запуск prod версии через докер](#docker)
+- [Запуск prod версии на физическом сервере](#physical)
+
+В зависимости от выбранного сценария создайте и заполните `env` файл
 
 
+# <a name="docker"></a>Запуск prod версии через докер
 
+Скачайте код:
+```sh
+git clone https://github.com/devmanorg/star-burger.git
+```
 
-# <a name="docker"></a>Автоматическое развертывание c помощью Docker
 
 Установите [Docker](https://docs.docker.com/engine/install/ubuntu/)
 
@@ -35,8 +75,9 @@ cd star-burger
 ```
 
 
-# <a name="Physical"></a>Деплой на физической машине
-# Подготовка
+# <a name="physical"></a>Запуск prod версии на физическом сервере
+
+## Подготовка
 
 Сайт предполагает свою работу в связки с Nginx и Gunicorn. Ниже рассмотрим обязательные шаги
 
@@ -51,11 +92,6 @@ python --version
 **Важно!** Версия Python должна быть не ниже 3.6.
 
 Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии.
-
-### Скачайте код:
-```sh
-git clone https://github.com/devmanorg/star-burger.git
-```
 
 ### Установите Gunicorn
 
@@ -117,31 +153,7 @@ server {
 ```
 При необходимости настройте SSL. Укажите пути для media и static папок.
 
-### Установите Postgres
-Рекомендуется использовать Postgres при деплое проекта. Вы можете скачать его с официального [сайта](https://www.postgresql.org/download/)
 
-### Заполните .env
-Файл `.env` в каталоге `star_burger/` вида:
-```commandline
-SECRET_KEY='12345asdv'
-YANDEX_KEY='0000-1111-2222-3333-4444'
-DEBUG='False'
-DATABASE_URL='postgres://USER:PASSWORD@HOST:PORT/NAME'
-ROLLBAR_KEY='12345abc'
-ALLOWED_HOSTS=1.1.1.1,yourdomain.ru
-```
-
-- `SECRET_KEY` секретный ключ вашего проекта на django
-Вы можете создать ключ выполнив команду
-```commandline
-python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-```
--  `YANDEX_KEY`. Переменная хранит ключ от [API яндекса](https://developer.tech.yandex.ru/) для работы с геокодером.
--  `ROLLBAR_KEY`. (Опционально)Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на [Rollback](https://rollbar.com) и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
--  `ENVIRONMENT` название окружения для сервиса ROLLBAR. Опционально.
--  `DB_URL`. Указав URL для подключения к бд. Примеры можно посмотреть тут https://github.com/jazzband/dj-database-url#id13
-- `DEBUG` Включение и отключение режима отладки. Поставьте `False`.
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 
 ## Автоматическое развертывание в локальном окружениее
 
@@ -150,17 +162,6 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 cd star-burger
 ./deploy_star_burger
 ```
-
-
-
-
-
-
-
-
-
-
-
 
 ### Установите Python
 [Установите Python](https://www.python.org/), если этого ещё не сделали.
@@ -172,35 +173,6 @@ python --version
 **Важно!** Версия Python должна быть не ниже 3.6.
 
 Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии.
-
-### Скачайте код:
-```sh
-git clone https://github.com/devmanorg/star-burger.git
-```
-### Заполните .env
-Файл `.env` в каталоге `star_burger/` вида:
-```commandline
-SECRET_KEY='12345asdv'
-YANDEX_KEY='0000-1111-2222-3333-4444'
-DEBUG='False'
-DATABASE_URL='postgres://USER:PASSWORD@HOST:PORT/NAME'
-ROLLBAR_KEY='12345abc'
-ALLOWED_HOSTS=1.1.1.1,yourdomain.ru
-```
-
-- `SECRET_KEY` секретный ключ вашего проекта на django
-Вы можете создать ключ  выполнив команду
-```commandline
-python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-```
--  `YANDEX_KEY`. Переменная хранит ключ от [API яндекса](https://developer.tech.yandex.ru/) для работы с геокодером.
--  `ROLLBAR_KEY`. (Опционально)Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на [Rollback](https://rollbar.com) и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
--  `ENVIRONMENT` название окружения для сервиса ROLLBAR. Опционально.
--  `DB_URL`. Указав URL для подключения к бд. Примеры можно посмотреть тут https://github.com/jazzband/dj-database-url#id13
-- `DEBUG` Включение и отключение режима отладки. Поставьте `False`.
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
-
-
 
 
 

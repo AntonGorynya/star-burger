@@ -8,10 +8,6 @@
 
 ### Как собрать бэкенд
 
-Скачайте код:
-```sh
-git clone https://github.com/devmanorg/star-burger.git
-```
 
 Перейдите в каталог проекта:
 ```sh
@@ -107,27 +103,6 @@ Parcel будет следить за файлами в каталоге `bundle
 ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
 ```
 
-### Заполните .env
-Файл `.env` в каталоге `star_burger/` вида:
-```commandline
-SECRET_KEY='12345asdv'
-YANDEX_KEY='0000-1111-2222-3333-4444'
-DEBUG='True'
-DATABASE_URL='postgres://USER:PASSWORD@HOST:PORT/NAME'
-ALLOWED_HOSTS=1.1.1.1,yourdomain.ru
-```
-
-- `SECRET_KEY` секретный ключ вашего проекта на django
-Вы можете создать ключ выполнив команду
-```commandline
-python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-```
-- `YANDEX_KEY`. Переменная хранит ключ от [API яндекса](https://developer.tech.yandex.ru/) для работы с геокодером.
-- `ROLLBAR_KEY`. (Опционально)Переменная хранит ключ для отправки исключений на внешний сервер https://rollbar.com. Для получения ключ зарегистрируйтесь на [Rollback](https://rollbar.com) и создайте новый проект. Установите значение перменной равной токену `post_server_item` в настройках проекта.
-- `ENVIRONMENT` название окружения для сервиса ROLLBAR. Опционально.
-- `DB_URL`. Указав URL для подключения к бд. Примеры можно посмотреть тут https://github.com/jazzband/dj-database-url#id13
-- `DEBUG` Включение и отключение режима отладки. Поставьте `False`.
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 
 ## Создайте файл базы данных и отмигрируйте её следующей командой:
 
