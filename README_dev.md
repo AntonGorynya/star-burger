@@ -129,7 +129,7 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 - `DEBUG` Включение и отключение режима отладки. Поставьте `False`.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 
-## Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
+## Создайте файл базы данных и отмигрируйте её следующей командой:
 
 ```sh
 python manage.py migrate
@@ -142,3 +142,5 @@ python manage.py runserver
 ```
 Теперь если зайти на страницу  [http://127.0.0.1:8000/](http://127.0.0.1:8000/), то вместо пустой страницы вы увидите:
 ![](https://dvmn.org/filer/canonical/1594651900/687/)
+
+# [Назад](README.md)
