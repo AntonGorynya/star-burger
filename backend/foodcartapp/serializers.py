@@ -1,7 +1,7 @@
 import datetime
 from .geo_tools import fetch_coordinates
-from star_burger.settings import YANDEX_KEY
-from rest_framework.serializers import ValidationError, ModelSerializer, ListField
+from backend.star_burger.settings import YANDEX_KEY
+from rest_framework.serializers import ModelSerializer
 from .models import Customer, Address, OrderedProduct, Order
 
 
