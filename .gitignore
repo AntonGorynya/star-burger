@@ -1,7 +1,6 @@
-bundles/**
 node_modules/
 media/
-staticfiles/
+staticfiles/bundles/
 db.*
 .idea/
 
