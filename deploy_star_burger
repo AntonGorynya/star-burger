@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -a
+work_dir=$PWD
+
+set -ea
 export $(cat star_burger/.env  | grep ROLLBAR | tr -d \")
 set +a
 
@@ -20,16 +22,17 @@ echo "Installing requirements..."
 pip install -r requirements.txt
 
 echo "Installing node packages"
+cd ./frontend
 npm ci --dev
 echo "Installing front packages"
 ./node_modules/.bin/parcel build ./bundles-src/index.js
 
 echo "Checking migration"
-python3 manage.py makemigrations --dry-run --check
+python3 $work_dir/backend/manage.py makemigrations --dry-run --check
 echo "Migrating..."
-python3 manage.py migrate --noinput
+python3 $work_dir/backend/manage.py migrate --noinput
 echo "collect static..."
-python3 manage.py collectstatic --noinput
+python3 $work_dir/backend/manage.py collectstatic --noinput
 echo "Reload nginx"
 systemctl reload nginx.service
 echo "Reload Gunicorn"
