@@ -63,7 +63,7 @@ npm --version
 Перейдите в каталог проекта и установите пакеты Node.js:
 
 ```sh
-cd star-burger
+cd star-burger/frontend
 npm ci --dev
 ```
 
@@ -74,13 +74,7 @@ npm ci --dev
 Теперь запустите сборку фронтенда и не выключайте. Parcel будет работать в фоне и следить за изменениями в JS-коде:
 
 ```sh
-./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url="./"
-```
-
-Если вы на Windows, то вам нужна та же команда, только с другими слешами в путях:
-
-```sh
-.\node_modules\.bin\parcel watch bundles-src/index.js --dist-dir bundles --public-url="./"
+./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir ../staticfiles/bundles --public-url="./"
 ```
 
 Дождитесь завершения первичной сборки. Это вполне может занять 10 и более секунд. О готовности вы узнаете по сообщению в консоли:
@@ -100,12 +94,15 @@ Parcel будет следить за файлами в каталоге `bundle
 Собрать фронтенд:
 
 ```sh
-./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
+./node_modules/.bin/parcel build bundles-src/index.js --dist-dir ../staticfiles/bundles  --public-url="./"
 ```
 
 
 ## Создайте файл базы данных и отмигрируйте её следующей командой:
-
+Предварительно перейдите в папку `backend`
+```commandline
+cd ../backend
+```
 ```sh
 python manage.py migrate
 ```
