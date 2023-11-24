@@ -9,7 +9,7 @@ env = Env()
 env.read_env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, '..', 'staticfiles')
 
 
 ENVIRONMENT = env('ENVIRONMENT', 'production')
@@ -128,8 +128,8 @@ INTERNAL_IPS = [
 
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "..", "static", "assets"),
-    os.path.join(BASE_DIR, "..", "static", "bundles"),
+    os.path.join(STATIC_ROOT, "assets"),
+    os.path.join(STATIC_ROOT, "bundles"),
 ]
 
 if ROLLBAR_KEY:
