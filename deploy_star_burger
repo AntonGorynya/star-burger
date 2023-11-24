@@ -25,7 +25,7 @@ echo "Installing node packages"
 cd ./frontend
 npm ci --dev
 echo "Installing front packages"
-./node_modules/.bin/parcel build ./bundles-src/index.js
+./node_modules/.bin/parcel build ./bundles-src/index.js --dist-dir ../static/bundles
 
 echo "Checking migration"
 python3 $work_dir/backend/manage.py makemigrations --dry-run --check

@@ -83,7 +83,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'star_burger.wsgi.application'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", 'media')
 MEDIA_URL = '/media/'
 
 DATABASES = {
@@ -127,8 +127,8 @@ INTERNAL_IPS = [
 
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "assets"),
-    os.path.join(BASE_DIR, "bundles"),
+    os.path.join(BASE_DIR, "..", "static", "assets"),
+    os.path.join(BASE_DIR, "..", "static", "bundles"),
 ]
 
 if ROLLBAR_KEY:

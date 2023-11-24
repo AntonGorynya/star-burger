@@ -1,6 +1,6 @@
 import datetime
 from .geo_tools import fetch_coordinates
-from backend.star_burger.settings import YANDEX_KEY
+from star_burger.settings import YANDEX_KEY
 from rest_framework.serializers import ModelSerializer
 from .models import Customer, Address, OrderedProduct, Order
 
