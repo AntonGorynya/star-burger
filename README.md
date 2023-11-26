@@ -25,7 +25,7 @@ git clone https://github.com/devmanorg/star-burger.git
 ```
 
 ## Заполните .env файлы
-Файл `.env` в каталоге `star_burger/` вида:
+Файл `.env` в каталоге `backend/` вида:
 ```commandline
 SECRET_KEY='12345asdv'
 YANDEX_KEY='0000-1111-2222-3333-4444'
