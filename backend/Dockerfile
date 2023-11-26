@@ -1,11 +1,12 @@
 FROM python:3.9-slim as static
-WORKDIR /usr/app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /usr/app/backend
 COPY . .
-RUN python manage.py collectstatic --noinput
+RUN pip install --no-cache-dir -r requirements.txt
+RUN mkdir -p /usr/app/staticfiles/assets
+RUN mkdir -p /usr/app/staticfiles/bundles
+RUN python3 manage.py collectstatic --noinput
 
 FROM static  as gunicorn
-WORKDIR /usr/app
+WORKDIR /usr/app/backend
 RUN pip install gunicorn
 CMD ["gunicorn", "-w", "3", "-b", "0.0.0.0:8080", "star_burger.wsgi:application"]

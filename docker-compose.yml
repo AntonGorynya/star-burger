@@ -2,18 +2,19 @@ version: '3.4'
 services:
   frontend:
     image: star-burger_frontend:v1.0
+    container_name: star-burger_frontend
     build:
-      context: .
+      context: ./frontend
       target: frontend
   static:
     image: star-burger_static:v1.0
     build:
-      context: .
+      context: ./backend
       target: static
   gunicorn:
     image: star-burger_gunicorn:v1.0
     build:
-      context: .
+      context: ./backend
       target: gunicorn
     network_mode: "host"  
 

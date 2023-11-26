@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -a
+set -ea
 export $(cat star_burger/.env  | grep ROLLBAR | tr -d \")
 set +a
 
@@ -18,12 +18,10 @@ docker-compose up --no-start
 
 echo "copy static files"
 docker cp  star-burger_static_1:/usr/app/staticfiles /opt/star-burger/star-burger
-docker cp  star-burger_frontend_1:/usr/app/bundles /opt/star-burger/star-burger
-cp assets/*  staticfiles/
-cp bundles/*  staticfiles/
+docker cp  star-burger_frontend:/usr/app/bundles /opt/star-burger/star-burger
 
-echo "Start Gunicorn"
-systemctl start star-burger.service
+echo "Restart Gunicorn"
+systemctl restart star-burger.service
 
 echo "Deployed"
 
