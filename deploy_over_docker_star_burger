@@ -7,9 +7,6 @@ set +a
 git pull
 GIT_HASH=$(git rev-parse --short HEAD)
 
-echo "Stop Gunicorn"
-systemctl stop star-burger.service
-
 echo "Creating images"
 docker-compose build
 
