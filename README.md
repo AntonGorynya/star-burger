@@ -24,7 +24,7 @@
 git clone https://github.com/devmanorg/star-burger.git
 ```
 
-## Заполните .env
+## Заполните .env файлы
 Файл `.env` в каталоге `star_burger/` вида:
 ```commandline
 SECRET_KEY='12345asdv'
@@ -32,6 +32,11 @@ YANDEX_KEY='0000-1111-2222-3333-4444'
 DEBUG='True'
 DATABASE_URL='postgres://USER:PASSWORD@HOST:PORT/NAME'
 ALLOWED_HOSTS=1.1.1.1,yourdomain.ru
+```
+
+Если используете сервис [rollbar](rollbar.com), то создайте `.env` файл в папке `stage` вида
+```
+ROLLBAR_KEY="aaaabbbbbbbbbcccccc"
 ```
 
 - `SECRET_KEY` секретный ключ вашего проекта на django
@@ -86,7 +91,7 @@ WantedBy=multi-user.target
 
 Перейдите в каталог проекта и запустите скрипт деплоя:
 ```sh
-cd star-burger
+cd star-burger/stage
 ./deploy_over_docker_star_burger
 ```
 
