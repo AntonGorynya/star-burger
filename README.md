@@ -163,6 +163,6 @@ server {
 
 Перейдите в каталог проекта и запустите скрипт деплоя:
 ```sh
-cd star-burger
+cd star-burger/stage
 ./deploy_star_burger
 ```

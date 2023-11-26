@@ -1,28 +1,30 @@
 #!/bin/bash
 
 work_dir=$PWD
+set -e
 
-set -ea
-export $(cat star_burger/.env  | grep ROLLBAR | tr -d \")
-set +a
+if [ -e ".env" ]; then
+    source .env
+fi
+
 
 git pull
 GIT_HASH=$(git rev-parse --short HEAD)
 
-if [ -e "venv/bin/activate" ]; then
+if [ -e "../venv/bin/activate" ]; then
     echo "activating venv"
-    source venv/bin/activate
+    source ../venv/bin/activate
 else
     echo "Creating venv..."
     python -m venv venv
-    source venv/bin/activate
+    source ../venv/bin/activate
 fi
 
 echo "Installing requirements..."
-pip install -r backend/requirements.txt
+pip install -r ../backend/requirements.txt
 
 echo "Installing node packages"
-cd ./frontend
+cd ../frontend
 npm ci --dev
 echo "Installing front packages"
 ./node_modules/.bin/parcel build ./bundles-src/index.js --dist-dir $work_dir/staticfiles/bundles
@@ -40,4 +42,7 @@ systemctl restart star-burger.service
 
 echo "Deployed"
 
-curl -H "X-Rollbar-Access-Token: ${ROLLBAR_KEY}" -H "Content-Type: application/json" -X POST 'https://api.rollbar.com/api/1/deploy' -d "{\"environment\": \"production\", \"revision\": \"${GIT_HASH}\", \"rollbar_name\": \"Anton\", \"local_username\": \"$(whoami)\", \"comment\": \"deployment\", \"status\": \"succeeded\"}"
+if [ -v ROLLBAR_KEY ]; then
+   curl -H "X-Rollbar-Access-Token: ${ROLLBAR_KEY}" -H "Content-Type: application/json" -X POST 'https://api.rollbar.com/api/1/deploy' -d "{\"environment\": \"production\", \"revision\": \"${GIT_HASH}\", \"rollbar_name\": \"Anton\", \"local_username\": \"$(whoami)\", \"comment\": \"deployment\", \"status\": \"succeeded\"}"
+   echo "Sended log to LOGBAR"
+fi
