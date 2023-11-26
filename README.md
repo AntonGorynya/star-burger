@@ -47,6 +47,28 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 - `DATABASE_URL` URL для подключения к внешней БД Postgre
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 
+Cоздайте файл `/etc/systemd/system/star-burger.service` вида
+```sh
+[Unit]
+Description=gunicorn daemon
+After=network.target
+After=postgresql.service
+Requires=postgresql.service
+
+[Service]
+WorkingDirectory=/opt/star-burger/star-burger
+# Выберете один ExecStart параметр в зависимости от желаямого деплоя
+ExecStart=docker run --network="host" -p 127.0.0.1:8080:8080  star-burger_gunicorn:v1.0  # Если используется Docker
+ExecStart=gunicorn -w 3 -b 127.0.0.1:8080 star_burger.wsgi:application # Если запускается напрямую на хосте
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+Для запуска сайта на локальном IP адресе.
+Укажите вашу WorkingDirectory.
+
 ## Варианты установки
 
 Ниже рассмотрено несколько вариантов по запуску сайта.
@@ -59,12 +81,6 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 
 
 # <a name="docker"></a>Запуск prod версии через докер
-
-Скачайте код:
-```sh
-git clone https://github.com/devmanorg/star-burger.git
-```
-
 
 Установите [Docker](https://docs.docker.com/engine/install/ubuntu/)
 
@@ -99,30 +115,13 @@ python --version
 pip install gunicorn
 ```
 
-Cоздайте файл `/etc/systemd/system/star-burger.service` вида
-```sh
-[Unit]
-Description=gunicorn daemon
-After=network.target
-After=postgresql.service
-Requires=postgresql.service
-
-[Service]
-WorkingDirectory=/opt/star-burger/star-burger
-ExecStart=docker run --network="host" -p 127.0.0.1:8080:8080  star-burger_gunicorn:v1.0
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-Для запуска сайта на локальном IP адресе.
-Укажите вашу WorkingDirectory.
-
 ### Установите NGINX
-
+При необходиости установите и настройте NGINX
+Для установки веб сервера NGINX  используйте команду
 ```commandline
 apt install nginx
 ```
+Приме конфигурационного файла:
 Создайте файл `/etc/nginx/sites-enabled/star-burger` вида
 ```commandline
 server {
