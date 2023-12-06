@@ -10,13 +10,14 @@ env.read_env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'staticfiles')
+print(STATIC_ROOT)
 
 
 ENVIRONMENT = env('ENVIRONMENT', 'production')
 DEBUG = env.bool('DEBUG', False)
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY','secret_key')
 ROLLBAR_KEY = env('ROLLBAR_KEY', False)
-YANDEX_KEY = env('YANDEX_KEY')
+YANDEX_KEY = env('YANDEX_KEY','yandex')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS',  ['127.0.0.1', 'localhost'])
 
 

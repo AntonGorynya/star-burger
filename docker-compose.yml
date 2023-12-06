@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  db:
+   image: postgres:12.0-alpine
+   volumes:
+     - db_data:/var/lib/postgresql/data
+   environment:
+      POSTGRES_DB: ${POSTGRES_DB-test_k8s}
+      POSTGRES_USER: ${POSTGRES_USER-test_k8s}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-OwOtBep9Frut}
+
+  frontend:
+    image: star-burger_frontend:v1.0
+    container_name: star-burger_frontend
+    build:
+      context: ./frontend
+      target: frontend
+    volumes:
+      - staticdir:/usr/app/frontend/staticfiles
+
+  static:
+    image: star-burger_static:v1.0
+    build:
+      context: ./backend
+      target: static
+    volumes:
+      - staticdir:/usr/app/staticfiles
+
+  gunicorn:
+    image: star-burger_gunicorn:v1.0
+    build:
+      context: ./backend
+      target: gunicorn
+    volumes:
+      - staticdir:/usr/app/staticfiles
+    environment:
+      DATABASE_URL: ${DATABASE_URL-postgres://test_k8s:OwOtBep9Frut@db:5432/test_k8s}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS-10.176.46.68,10.176.46.31,80.249.147.35,127.0.0.1,localhost}    
+    ports:
+      - 10.176.46.31:8080:8080
+    depends_on:
+      - frontend
+      - static
+      - db
+
+volumes:
+  staticdir:
+  db_data:
