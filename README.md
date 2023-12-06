@@ -13,16 +13,77 @@
 
 Третий интерфейс — это админка. Преимущественно им пользуются программисты при разработке сайта. Также сюда заходит менеджер, чтобы обновить меню ресторанов Star Burger.
 
-# Установка
-
-## Установите Postgres
-Рекомендуется использовать Postgres. Вы можете скачать его с официального [сайта](https://www.postgresql.org/download/)
+Ниже будет рассмотрено 2 варианта установки. В локальном и дев окружении.
+# Установка в Local окружении
 
 ## Скачайте код
 Скачайте код:
 ```sh
 git clone https://github.com/devmanorg/star-burger.git
 ```
+
+## Установка докера
+Установите [Docker](https://docs.docker.com/engine/install/ubuntu/)
+
+## Заполните .env файлы
+Файл `.env` в каталоге `backend/` вида:
+```commandline
+YANDEX_KEY='0000-1111-2222-3333-4444'
+```
+Переменная хранит ключ от [API яндекса](https://developer.tech.yandex.ru/) для работы с геокодером.
+
+## Запустите контейнер
+```commandline
+docker-compose up
+```
+После успешной сборки выполните миграцию и создайте супер пользователя.
+```commandline
+docker exec -it star-burger_gunicorn_1 python3 ./manage.py migrate
+docker exec -it star-burger_gunicorn_1 python3 ./manage.py createsuperuser
+```
+
+# Установка в Dev окружении
+Сайт предполагает свою работу в связки с Nginx и Gunicorn. Ниже рассмотрим обязательные шаги
+## Установите NGINX
+При необходиости установите и настройте NGINX
+Для установки веб сервера NGINX  используйте команду
+```commandline
+apt install nginx
+```
+Приме конфигурационного файла:
+Создайте файл `/etc/nginx/sites-enabled/star-burger` вида
+```commandline
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name 80.249.147.35 antongoryniadev.ru;
+
+    if ($scheme = 'http') {
+        return 301 https://$host$request_uri;
+    }
+
+    ssl_certificate /etc/letsencrypt/live/antongoryniadev.ru/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/antongoryniadev.ru/privkey.pem; # managed by Certbot
+
+    location /media/ {
+        alias /opt/star-burger/media/;
+    }
+
+    location /static/ {
+        alias /opt/star-burger/staticfiles/;
+    }
+
+    location / {
+        include '/etc/nginx/proxy_params';
+        proxy_pass http://127.0.0.1:8080/;
+    }
+}
+```
+При необходимости настройте SSL. Укажите пути для media и static папок.
+
+## Установите Postgres
+Рекомендуется использовать Postgres. Вы можете скачать его с официального [сайта](https://www.postgresql.org/download/)
+
 
 ## Заполните .env файлы
 Файл `.env` в каталоге `backend/` вида:
@@ -74,95 +135,13 @@ WantedBy=multi-user.target
 Для запуска сайта на локальном IP адресе.
 Укажите вашу WorkingDirectory.
 
-## Варианты установки
 
-Ниже рассмотрено несколько вариантов по запуску сайта.
-
-- [Запуск dev-верисии](README_dev.md)
-- [Запуск prod версии через докер](#docker)
-- [Запуск prod версии на физическом сервере](#physical)
-
-В зависимости от выбранного сценария создайте и заполните `env` файл
-
-
-# <a name="docker"></a>Запуск prod версии через докер
-
+# Установка докера
 Установите [Docker](https://docs.docker.com/engine/install/ubuntu/)
 
 Перейдите в каталог проекта и запустите скрипт деплоя:
 ```sh
-cd star-burger/stage
-./deploy_over_docker_star_burger
-```
-
-
-# <a name="physical"></a>Запуск prod версии на физическом сервере
-
-## Подготовка
-
-Сайт предполагает свою работу в связки с Nginx и Gunicorn. Ниже рассмотрим обязательные шаги
-
-
-### Установите Python
-[Установите Python](https://www.python.org/), если этого ещё не сделали.
-
-Проверьте, что `python` установлен и корректно настроен. Запустите его в командной строке:
-```sh
-python --version
-```
-**Важно!** Версия Python должна быть не ниже 3.6.
-
-Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии.
-
-### Установите Gunicorn
-
-```commandline
-pip install gunicorn
-```
-
-### Установите NGINX
-При необходиости установите и настройте NGINX
-Для установки веб сервера NGINX  используйте команду
-```commandline
-apt install nginx
-```
-Приме конфигурационного файла:
-Создайте файл `/etc/nginx/sites-enabled/star-burger` вида
-```commandline
-server {
-    listen 80;
-    listen 443 ssl;
-    server_name 80.249.147.35 antongoryniadev.ru;
-
-    if ($scheme = 'http') {
-        return 301 https://$host$request_uri;
-    }
-
-    ssl_certificate /etc/letsencrypt/live/antongoryniadev.ru/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/antongoryniadev.ru/privkey.pem; # managed by Certbot
-
-    location /media/ {
-        alias /opt/star-burger/star-burger/media/;
-    }
-
-    location /static/ {
-        alias /opt/star-burger/star-burger/staticfiles/;
-    }
-
-    location / {
-        include '/etc/nginx/proxy_params';
-        proxy_pass http://127.0.0.1:8080/;
-    }
-}
-```
-При необходимости настройте SSL. Укажите пути для media и static папок.
-
-
-
-## Автоматическое развертывание в локальном окружение
-
-Перейдите в каталог проекта и запустите скрипт деплоя:
-```sh
-cd star-burger/stage
+cd star-burger/dev
 ./deploy_star_burger
 ```
+
